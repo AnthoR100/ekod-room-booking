@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: ekod_room_booking
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres_data_ekod_room_booking:/var/lib/postgresql/data
+volumes:
+  postgres_data_ekod_room_booking:
