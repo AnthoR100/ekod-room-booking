@@ -4,7 +4,7 @@ CREATE TABLE users
     first_name VARCHAR(50)  NOT NULL,
     last_name  VARCHAR(50)  NOT NULL,
     email      VARCHAR(150) NOT NULL UNIQUE,
-    password   VARCHAR(255),
+    password   VARCHAR(255) NOT NULL,
     role       VARCHAR(20)  NOT NULL,
     active     BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP    NOT NULL DEFAULT NOW()
@@ -18,15 +18,21 @@ CREATE TABLE rooms
     capacity    INTEGER      NOT NULL CHECK (capacity >= 1 AND capacity <= 1000),
     location    VARCHAR(100),
     available   BOOLEAN      NOT NULL DEFAULT TRUE,
+    image_url   VARCHAR(500),
     created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE equipment
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE room_equipment
 (
-    id        SERIAL PRIMARY KEY,
-    room_id   INTEGER     NOT NULL REFERENCES rooms (id) ON DELETE CASCADE,
-    equipment VARCHAR(50) NOT NULL,
-    CONSTRAINT uq_room_equipment UNIQUE (room_id, equipment)
+    room_id      BIGINT NOT NULL REFERENCES rooms (id) ON DELETE CASCADE,
+    equipment_id BIGINT NOT NULL REFERENCES equipment (id) ON DELETE CASCADE,
+    PRIMARY KEY (room_id, equipment_id)
 );
 
 CREATE TABLE reservations
@@ -34,7 +40,7 @@ CREATE TABLE reservations
     id                SERIAL PRIMARY KEY,
     start_date_time   TIMESTAMP    NOT NULL,
     end_date_time     TIMESTAMP    NOT NULL,
-    status            VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
+    status            VARCHAR(20)  NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED')),
     purpose           VARCHAR(255),
     number_of_people  INTEGER      NOT NULL,
     user_id           INTEGER      NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
