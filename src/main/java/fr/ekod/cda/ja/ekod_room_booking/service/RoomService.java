@@ -48,7 +48,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<RoomResponseDto> search(String name, String description) {
-        return roomRepository.findByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(name, description)
+        return roomRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(name, description)
                 .stream()
                 .map(roomMapper::toResponseDto)
                 .toList();

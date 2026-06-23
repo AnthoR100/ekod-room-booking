@@ -13,5 +13,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     boolean existsByName(String name);
 
-    List<Room> findByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(String name, String description);
+    List<Room> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 }
