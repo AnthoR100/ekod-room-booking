@@ -1,0 +1,16 @@
+meta {
+  name: Search Rooms
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/rooms/search?name=Salle
+  body: none
+  auth: none
+}
+
+params:query {
+  name: Salle
+  ~description: 
+}

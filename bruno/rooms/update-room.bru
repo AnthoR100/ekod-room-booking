@@ -1,0 +1,23 @@
+meta {
+  name: Update Room
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/rooms/2
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Salle",
+    "description": "Salle rénovée avec nouveau matériel",
+    "capacity": 25,
+    "location": "Bâtiment A - Étage 2",
+    "available": false,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}
