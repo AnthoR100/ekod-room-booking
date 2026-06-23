@@ -10,4 +10,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
     boolean existsByName(String name);
 
     List<Equipment> findByIdIn(List<Long> ids);
+
+    Long id(Long id);
 }

@@ -1,5 +1,6 @@
 {
   "version": "1",
-  "name": "ekod-room-booking",
-  "type": "collection"
+  "name": "ekod_room_booking",
+  "type": "collection",
+  "ignore": []
 }
