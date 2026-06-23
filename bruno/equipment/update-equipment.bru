@@ -1,0 +1,17 @@
+meta {
+  name: Update Equipment
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/equipment/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Tableau blanc"
+  }
+}
