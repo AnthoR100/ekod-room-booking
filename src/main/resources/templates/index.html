@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EKOD Room Booking</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="navbar__brand">
+        <span class="navbar__logo">&#9632;</span>
+        EKOD Room Booking
+    </div>
+    <nav class="navbar__links">
+        <a th:href="@{/login}" class="btn btn--outline">Se connecter</a>
+        <a th:href="@{/register}" class="btn btn--primary">S'inscrire</a>
+    </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero__content">
+            <span class="hero__badge">Gestion de salles simplifiée</span>
+            <h1 class="hero__title">Réservez vos salles<br>en toute simplicité</h1>
+            <p class="hero__subtitle">
+                Consultez les disponibilités, gérez vos réservations et organisez
+                vos espaces de travail depuis une seule plateforme.
+            </p>
+            <div class="hero__actions">
+                <a th:href="@{/register}" class="btn btn--primary btn--lg">Commencer gratuitement</a>
+                <a th:href="@{/login}" class="btn btn--ghost btn--lg">Se connecter</a>
+            </div>
+        </div>
+        <div class="hero__visual">
+            <div class="room-card room-card--float">
+                <div class="room-card__header">
+                    <span class="room-card__dot room-card__dot--green"></span>
+                    <span>Salle disponible</span>
+                </div>
+                <div class="room-card__name">Salle Horizon</div>
+                <div class="room-card__meta">
+                    <span>&#128101; 12 places</span>
+                    <span>&#128249; Vidéoprojecteur</span>
+                </div>
+            </div>
+            <div class="room-card room-card--float room-card--offset">
+                <div class="room-card__header">
+                    <span class="room-card__dot room-card__dot--red"></span>
+                    <span>Réservée</span>
+                </div>
+                <div class="room-card__name">Salle Zénith</div>
+                <div class="room-card__meta">
+                    <span>&#128101; 8 places</span>
+                    <span>&#128187; Tableau blanc</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="features__title">Tout ce dont vous avez besoin</h2>
+        <div class="features__grid">
+            <div class="feature-card">
+                <div class="feature-card__icon">&#128337;</div>
+                <h3 class="feature-card__title">Disponibilités en temps réel</h3>
+                <p class="feature-card__desc">
+                    Consultez instantanément les créneaux libres et réservez en quelques clics.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card__icon">&#128205;</div>
+                <h3 class="feature-card__title">Gestion des équipements</h3>
+                <p class="feature-card__desc">
+                    Filtrez les salles selon leurs équipements : vidéoprojecteur, tableau blanc, visioconférence…
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card__icon">&#128274;</div>
+                <h3 class="feature-card__title">Accès sécurisé</h3>
+                <p class="feature-card__desc">
+                    Chaque utilisateur accède uniquement à ce qu'il est autorisé à voir et à modifier.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>&copy; 2026 EKOD Room Booking. Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>

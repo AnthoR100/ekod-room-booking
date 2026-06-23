@@ -1,0 +1,320 @@
+/* ============================================================
+   Base
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-primary-light: #dbeafe;
+    --color-text: #111827;
+    --color-text-muted: #6b7280;
+    --color-bg: #f9fafb;
+    --color-white: #ffffff;
+    --color-border: #e5e7eb;
+    --color-success: #16a34a;
+    --color-danger: #dc2626;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+/* ============================================================
+   Boutons
+   ============================================================ */
+.btn {
+    display: inline-block;
+    padding: 0.55rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+.btn--primary:hover { background-color: var(--color-primary-dark); }
+
+.btn--outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.btn--outline:hover {
+    background-color: var(--color-primary-light);
+}
+
+.btn--ghost {
+    background-color: transparent;
+    color: var(--color-white);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+.btn--ghost:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--color-white);
+}
+
+.btn--lg {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border-radius: 10px;
+}
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 5%;
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.navbar__logo {
+    color: var(--color-primary);
+    font-size: 1.3rem;
+}
+
+.navbar__links {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: 5rem 5% 6rem;
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+    color: var(--color-white);
+    min-height: 82vh;
+    overflow: hidden;
+}
+
+.hero__content {
+    flex: 1;
+    max-width: 560px;
+}
+
+.hero__badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+}
+
+.hero__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+}
+
+.hero__subtitle {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 2.2rem;
+    max-width: 460px;
+}
+
+.hero__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   Hero visual (cartes flottantes)
+   ============================================================ */
+.hero__visual {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.2rem;
+    max-width: 380px;
+}
+
+.room-card {
+    background-color: var(--color-white);
+    color: var(--color-text);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.5rem;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+}
+
+.room-card--offset {
+    margin-right: -1.5rem;
+}
+
+.room-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.room-card__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.room-card__dot--green { background-color: var(--color-success); }
+.room-card__dot--red   { background-color: var(--color-danger); }
+
+.room-card__name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+}
+
+.room-card__meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+}
+
+/* ============================================================
+   Features
+   ============================================================ */
+.features {
+    padding: 5rem 5%;
+    text-align: center;
+}
+
+.features__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: var(--color-text);
+}
+
+.features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: left;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.feature-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+}
+
+.feature-card__icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card__desc {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    background-color: var(--color-white);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        padding: 3rem 5%;
+        min-height: auto;
+        text-align: center;
+    }
+
+    .hero__content { max-width: 100%; }
+    .hero__subtitle { max-width: 100%; }
+    .hero__actions { justify-content: center; }
+
+    .hero__visual {
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .room-card--offset { margin-right: 0; }
+
+    .navbar__brand span:last-child { display: none; }
+}
