@@ -1,0 +1,19 @@
+meta {
+  name: Update Reservation Status
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/reservations/16/status?status=CONFIRMED
+  body: none
+  auth: bearer
+}
+
+params:query {
+  status: CONFIRMED
+}
+
+auth:bearer {
+  token: {{token}}
+}

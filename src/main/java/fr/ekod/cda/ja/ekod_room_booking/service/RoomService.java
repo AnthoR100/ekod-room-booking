@@ -8,11 +8,13 @@ import fr.ekod.cda.ja.ekod_room_booking.mapper.RoomMapper;
 import fr.ekod.cda.ja.ekod_room_booking.model.Equipment;
 import fr.ekod.cda.ja.ekod_room_booking.model.Room;
 import fr.ekod.cda.ja.ekod_room_booking.repository.EquipmentRepository;
+import fr.ekod.cda.ja.ekod_room_booking.repository.ReservationRepository;
 import fr.ekod.cda.ja.ekod_room_booking.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,37 +23,56 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final EquipmentRepository equipmentRepository;
+    private final ReservationRepository reservationRepository;
     private final RoomMapper roomMapper;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public RoomResponseDto findById(Long id) {
-        return roomRepository.findById(id)
-                .map(roomMapper::toResponseDto)
+        Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Salle", id));
+        syncAvailability(room);
+        return roomMapper.toResponseDto(room);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RoomResponseDto> findAll() {
-        return roomRepository.findAll()
-                .stream()
-                .map(roomMapper::toResponseDto)
-                .toList();
+        List<Room> rooms = roomRepository.findAll();
+        syncAvailability(rooms);
+        return rooms.stream().map(roomMapper::toResponseDto).toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RoomResponseDto> findAvailable() {
+        syncAvailability(roomRepository.findAll());
         return roomRepository.findByAvailableTrue()
                 .stream()
                 .map(roomMapper::toResponseDto)
                 .toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RoomResponseDto> search(String name, String description) {
-        return roomRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(name, description)
-                .stream()
-                .map(roomMapper::toResponseDto)
+        List<Room> rooms = roomRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(name, description);
+        syncAvailability(rooms);
+        return rooms.stream().map(roomMapper::toResponseDto).toList();
+    }
+
+    private void syncAvailability(Room room) {
+        if (!room.isAvailable() && !reservationRepository.existsActiveConfirmedReservation(room.getId(), LocalDateTime.now())) {
+            room.setAvailable(true);
+            roomRepository.save(room);
+        }
+    }
+
+    private void syncAvailability(List<Room> rooms) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Room> toRelease = rooms.stream()
+                .filter(r -> !r.isAvailable() && !reservationRepository.existsActiveConfirmedReservation(r.getId(), now))
                 .toList();
+        if (!toRelease.isEmpty()) {
+            toRelease.forEach(r -> r.setAvailable(true));
+            roomRepository.saveAll(toRelease);
+        }
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
@@ -14,4 +15,17 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     boolean existsByName(String name);
 
     List<Room> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
+
+    @Query("""
+            SELECT r FROM Room r
+            WHERE r.available = false
+            AND NOT EXISTS (
+                SELECT res FROM Reservation res
+                WHERE res.room = r
+                AND res.status = 'CONFIRMED'
+                AND res.startDateTime <= :now
+                AND res.endDateTime >= :now
+            )
+            """)
+    List<Room> findRoomsWithNoActiveReservation(@Param("now") LocalDateTime now);
 }
