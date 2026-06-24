@@ -54,6 +54,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler(InvalidFileTypeException.class)
     public ResponseEntity<Map<String, String>> handleInvalidFileType(InvalidFileTypeException ex) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
