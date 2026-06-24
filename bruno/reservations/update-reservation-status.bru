@@ -5,9 +5,13 @@ meta {
 }
 
 patch {
-  url: {{baseUrl}}/api/reservations/1/status?status=CONFIRMED
+  url: {{baseUrl}}/api/reservations/16/status?status=CONFIRMED
   body: none
   auth: bearer
+}
+
+params:query {
+  status: CONFIRMED
 }
 
 auth:bearer {

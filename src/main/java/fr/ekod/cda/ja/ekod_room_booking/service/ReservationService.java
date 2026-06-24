@@ -75,6 +75,13 @@ public class ReservationService {
     }
 
 
+    //findPending
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> findPending() {
+        return reservationRepository.findByStatus(ReservationStatus.PENDING)
+                .stream().map(reservationMapper::toResponseDto).toList();
+    }
+
     //findByRoomId
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findByRoomId(Long roomId) {
@@ -136,14 +143,14 @@ public class ReservationService {
         reservation.getRoom().setAvailable(false);
         roomRepository.save(reservation.getRoom());
 
-        List<Reservation> conflicting = reservationRepository.findOverlappingPending(
+        reservationRepository.rejectOverlappingPending(
                 reservation.getRoom().getId(),
                 reservation.getId(),
                 reservation.getStartDateTime(),
-                reservation.getEndDateTime()
+                reservation.getEndDateTime(),
+                ReservationStatus.PENDING,
+                ReservationStatus.REJECTED
         );
-        conflicting.forEach(r -> r.setStatus(ReservationStatus.REJECTED));
-        reservationRepository.saveAll(conflicting);
 
         return reservationMapper.toResponseDto(reservationRepository.save(reservation));
     }

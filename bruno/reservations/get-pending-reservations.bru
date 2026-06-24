@@ -1,11 +1,11 @@
 meta {
-  name: Get Reservations By Room
+  name: Get Pending Reservations
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/reservations/room/4
+  url: {{baseUrl}}/api/reservations/pending
   body: none
   auth: bearer
 }

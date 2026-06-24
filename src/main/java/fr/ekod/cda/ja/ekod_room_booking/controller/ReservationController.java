@@ -28,6 +28,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationResponseDto>> findPending() {
+        return ResponseEntity.ok(reservationService.findPending());
+    }
+
     @GetMapping("/me")
     public ResponseEntity<List<ReservationResponseDto>> findMine(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(reservationService.findByUserId(user));
