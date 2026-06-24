@@ -1,0 +1,15 @@
+meta {
+  name: Reject Reservation
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/reservations/1/reject
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

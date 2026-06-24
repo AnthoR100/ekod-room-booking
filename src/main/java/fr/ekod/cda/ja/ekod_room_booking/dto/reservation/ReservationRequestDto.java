@@ -1,5 +1,6 @@
 package fr.ekod.cda.ja.ekod_room_booking.dto.reservation;
 
+import fr.ekod.cda.ja.ekod_room_booking.validation.EndDateAfterStartDate;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
+@EndDateAfterStartDate
 public class ReservationRequestDto {
 
     @NotNull

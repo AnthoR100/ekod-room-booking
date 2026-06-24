@@ -1,0 +1,25 @@
+meta {
+  name: Create Reservation
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/reservations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "startDateTime": "2026-07-01T09:00:00",
+    "endDateTime": "2026-07-01T11:00:00",
+    "purpose": "Réunion d'équipe hebdomadaire",
+    "numberOfPeople": 8,
+    "roomId": 1
+  }
+}
