@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'EKOD Room Booking — ' + ${room.name}">EKOD Room Booking — Salle</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <!-- BANNER -->
+  <div class="room-detail-banner">
+    <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" th:alt="${room.name}">
+    <div class="room-detail-banner-overlay"></div>
+    <div class="room-detail-banner-content">
+      <div class="page-hero-label">► Détail de la salle</div>
+      <h1 class="page-hero-title" th:text="${room.name}">Salle Ada Lovelace</h1>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="section">
+    <div class="container">
+      <div class="room-detail-grid">
+
+        <!-- LEFT: description + equipment -->
+        <div>
+          <p class="room-detail-desc" th:text="${room.description}">
+            Salle polyvalente idéale pour les cours et formations en groupe.
+          </p>
+
+          <div class="equip-title">
+            <span class="equip-title-arrow">►</span>
+            <span class="equip-title-text">Équipements</span>
+          </div>
+
+          <div class="equip-list" th:if="${room.equipment != null and not #lists.isEmpty(room.equipment)}">
+            <div th:each="eq : ${room.equipment}" class="equip-item">
+              <span class="equip-item-arrow">►</span>
+              <span th:text="${eq.name}">Wi-Fi</span>
+            </div>
+          </div>
+          <div th:if="${#lists.isEmpty(room.equipment)}" class="empty-state">
+            <p>Aucun équipement renseigné.</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: info sidebar -->
+        <div>
+          <div class="room-info-card">
+            <div class="room-info-card-title">Informations</div>
+            <div class="room-info-fields">
+              <div>
+                <div class="room-info-label">Capacité</div>
+                <div class="room-info-number" th:text="${room.capacity}">20</div>
+                <div class="room-info-unit">personnes max.</div>
+              </div>
+              <div>
+                <div class="room-info-label">Localisation</div>
+                <div class="room-info-value" th:text="${room.location}">1er étage</div>
+              </div>
+              <div>
+                <div class="room-info-label">Disponibilité</div>
+                <div>
+                  <span th:if="${room.available}"  class="badge badge-available" style="margin-top:4px">DISPONIBLE</span>
+                  <span th:unless="${room.available}" class="badge badge-occupied" style="margin-top:4px">OCCUPÉE</span>
+                </div>
+              </div>
+            </div>
+
+            <a th:if="${room.available}"
+               th:href="@{/rooms/{id}/book(id=${room.id})}"
+               class="btn-book-room">Réserver cette salle</a>
+            <div th:unless="${room.available}"
+                 class="btn-book-room"
+                 style="opacity:.4;cursor:not-allowed">Salle indisponible</div>
+
+            <a th:href="@{/rooms}" class="btn-back">← Retour aux salles</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

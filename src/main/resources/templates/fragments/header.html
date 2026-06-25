@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<body>
+<header th:fragment="header">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span>EKOD Room Booking</span>
+      <span class="topbar-sep">|</span>
+      <span>Campus Le Mans</span>
+    </div>
+    <div class="topbar-social">
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"/>
+        </svg>
+      </a>
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/>
+          <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+        </svg>
+      </a>
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-header">
+    <a th:href="@{/}" class="header-logo">
+      <div class="logo-title">EKOD</div>
+      <div class="logo-sub">Room Booking</div>
+    </a>
+    <nav class="header-nav">
+      <a th:href="@{/}"
+         th:class="${activePage == 'home'} ? 'nav-link active' : 'nav-link'">Accueil</a>
+      <a th:href="@{/rooms}"
+         th:class="${activePage == 'rooms'} ? 'nav-link active' : 'nav-link'">Salles</a>
+      <a th:href="@{/reservations/me}"
+         th:class="${activePage == 'reservations'} ? 'nav-link active' : 'nav-link'">Mes réservations</a>
+      <a th:if="${isAdmin}"
+         th:href="@{/admin/dashboard}"
+         th:class="${activePage == 'admin'} ? 'nav-link active' : 'nav-link'">Admin</a>
+      <a th:href="@{/rooms}" class="btn-reserve-nav">Réserver</a>
+    </nav>
+  </div>
+
+</header>
+</body>
+</html>

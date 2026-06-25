@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Accueil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <!-- HERO -->
+  <div class="home-hero">
+    <div class="home-hero-mark" aria-hidden="true">►</div>
+    <div class="home-hero-content">
+      <div class="home-hero-label">► EKOD Room Booking</div>
+      <h1 class="home-hero-title">Réservez votre salle<br>en quelques clics</h1>
+      <p class="home-hero-desc">
+        Trouvez et réservez la salle idéale pour vos cours, réunions et événements
+        au sein du campus EKOD.
+      </p>
+      <a th:href="@{/rooms}" class="btn-hero">Voir les salles disponibles</a>
+    </div>
+  </div>
+
+  <!-- STATS BAND -->
+  <div class="stats-band">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-number" th:text="${totalRooms}">6</div>
+          <div class="stat-label">Salles équipées</div>
+        </div>
+        <div>
+          <div class="stat-number" th:text="${activeReservations}">12</div>
+          <div class="stat-label">Réservations actives</div>
+        </div>
+        <div>
+          <div class="stat-number" th:text="${occupancyRate + '%'}">73%</div>
+          <div class="stat-label">Taux d'occupation</div>
+        </div>
+        <div>
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Accès en ligne</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVAILABLE ROOMS -->
+  <div class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-arrow">►</span>
+          <span class="section-title-text">Salles disponibles</span>
+        </div>
+        <p class="section-subtitle">Réservez dès maintenant l'une de nos salles équipées</p>
+      </div>
+
+      <div class="rooms-grid" th:if="${not #lists.isEmpty(availableRooms)}">
+        <div th:each="room : ${availableRooms}" class="room-card">
+          <div class="room-card-img">
+            <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" th:alt="${room.name}">
+            <div class="room-card-img-overlay"></div>
+            <div class="room-card-img-content">
+              <div class="room-card-name" th:text="${room.name}">Salle Ada Lovelace</div>
+            </div>
+          </div>
+          <div class="room-card-body">
+            <div class="room-card-badges">
+              <span class="badge badge-capacity" th:text="${room.capacity + ' PLACES'}">20 PLACES</span>
+              <span class="badge badge-available">DISPONIBLE</span>
+            </div>
+            <div class="room-card-location" th:text="${room.location}">1er étage</div>
+            <div class="room-card-equipment">
+              <span th:if="${room.equipment != null and not #lists.isEmpty(room.equipment)}"
+                    th:text="${#strings.listJoin(room.equipment.![name], ' · ')}">Wi-Fi · Projecteur</span>
+            </div>
+            <div class="room-card-actions">
+              <a th:href="@{/rooms/{id}(id=${room.id})}" class="btn-outline">Détails</a>
+              <a th:href="@{/rooms/{id}/book(id=${room.id})}" class="btn-primary">Réserver</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(availableRooms)}" class="empty-state">
+        <p>Aucune salle disponible pour le moment.</p>
+      </div>
+
+      <div class="btn-center">
+        <a th:href="@{/rooms}" class="btn-outline btn-lg">Voir toutes les salles</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <h2 class="cta-band-title">Besoin d'une salle ?</h2>
+    <p class="cta-band-sub">Réservez en quelques clics et gérez vos créneaux en toute simplicité</p>
+    <a th:href="@{/rooms}" class="cta-band-btn">Réserver maintenant</a>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

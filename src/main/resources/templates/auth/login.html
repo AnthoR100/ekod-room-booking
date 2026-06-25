@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Connexion</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+  <div class="auth-split">
+
+    <!-- PANNEAU GAUCHE -->
+    <div class="auth-left">
+      <div class="auth-left-mark" aria-hidden="true">►</div>
+      <div class="auth-left-content">
+        <div class="auth-left-label">► EKOD Room Booking</div>
+        <h1 class="auth-left-title">Connectez-vous<br>à votre espace</h1>
+        <p class="auth-left-desc">
+          Accédez à vos réservations, consultez les salles disponibles et gérez
+          vos créneaux en toute simplicité.
+        </p>
+      </div>
+    </div>
+
+    <!-- PANNEAU DROIT — FORMULAIRE -->
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-card-title">Connexion</div>
+        </div>
+        <div class="auth-card-body">
+
+          <div id="loginError" class="alert-error" style="display:none" role="alert"></div>
+
+          <div class="form-field">
+            <label class="form-label" for="email">Adresse e-mail</label>
+            <input id="email" type="email" class="form-input"
+                   placeholder="votre@email.fr" autocomplete="email">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="password">Mot de passe</label>
+            <input id="password" type="password" class="form-input"
+                   placeholder="••••••••" autocomplete="current-password">
+          </div>
+
+          <button type="button" class="btn-submit" id="loginBtn" onclick="handleLogin()">
+            Se connecter
+          </button>
+
+          <p class="auth-footer-text">
+            Pas encore de compte ?
+            <a th:href="@{/register}" class="auth-footer-link">Créer un compte</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+  async function handleLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errorEl  = document.getElementById('loginError');
+
+    errorEl.style.display = 'none';
+
+    if (!email || !password) {
+      errorEl.textContent = 'Veuillez remplir tous les champs.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('accessToken',  data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        window.location.href = '/';
+      } else {
+        const err = await res.json().catch(() => ({}));
+        errorEl.textContent = err.message || 'E-mail ou mot de passe incorrect.';
+        errorEl.style.display = 'block';
+      }
+    } catch (_) {
+      errorEl.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  document.getElementById('password').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+
+</body>
+</html>
