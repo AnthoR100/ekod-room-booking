@@ -86,4 +86,10 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "Méthode HTTP '" + ex.getMethod() + "' non supportée sur cette route."));
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidToken(InvalidTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
 }

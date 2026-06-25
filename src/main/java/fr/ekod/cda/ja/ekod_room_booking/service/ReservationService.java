@@ -91,6 +91,15 @@ public class ReservationService {
                 .toList();
     }
 
+    //findByUserId (admin)
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> findByUserId(Long userId) {
+        return reservationRepository.findByUserId(userId)
+                .stream()
+                .map(reservationMapper::toResponseDto)
+                .toList();
+    }
+
     //updateStatus
     @Transactional
     public ReservationResponseDto updateStatus(Long id, ReservationStatus status) {
