@@ -45,6 +45,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findByRoomId(roomId));
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReservationResponseDto>> findByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(reservationService.findByUserId(userId));
+    }
+
     @PostMapping
     public ResponseEntity<ReservationResponseDto> create(
             @Valid @RequestBody ReservationRequestDto dto,

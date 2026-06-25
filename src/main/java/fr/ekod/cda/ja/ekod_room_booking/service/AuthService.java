@@ -4,6 +4,7 @@ import fr.ekod.cda.ja.ekod_room_booking.dto.auth.AuthResponseDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.auth.LoginRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.auth.RegisterRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.exception.ResourceAlreadyExistsException;
+import fr.ekod.cda.ja.ekod_room_booking.model.RefreshToken;
 import fr.ekod.cda.ja.ekod_room_booking.model.User;
 import fr.ekod.cda.ja.ekod_room_booking.model.enums.Role;
 import fr.ekod.cda.ja.ekod_room_booking.repository.UserRepository;
@@ -23,6 +24,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public AuthResponseDto register(RegisterRequestDto dto) {
@@ -40,9 +42,28 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user);
+        return buildResponse(user);
+    }
+
+    @Transactional
+    public AuthResponseDto login(LoginRequestDto dto) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
+        );
+
+        User user = userRepository.findByEmail(dto.getEmail()).orElseThrow();
+
+        return buildResponse(user);
+    }
+
+    @Transactional
+    public AuthResponseDto refresh(String refreshToken) {
+        RefreshToken token = refreshTokenService.validate(refreshToken);
+        User user = token.getUser();
+        RefreshToken newToken = refreshTokenService.rotate(token);
         return new AuthResponseDto(
-                token,
+                jwtService.generateToken(user),
+                newToken.getToken(),
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -51,18 +72,17 @@ public class AuthService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public AuthResponseDto login(LoginRequestDto dto) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
-        );
+    @Transactional
+    public void logout(String refreshToken) {
+        refreshTokenService.revoke(refreshToken);
+    }
 
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow();
-
-        String token = jwtService.generateToken(user);
+    private AuthResponseDto buildResponse(User user) {
+        String accessToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.generate(user);
         return new AuthResponseDto(
-                token,
+                accessToken,
+                refreshToken.getToken(),
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
