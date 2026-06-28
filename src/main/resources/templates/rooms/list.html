@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Nos salles</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="page-hero-label">► Nos espaces</div>
+      <h1 class="page-hero-title">Toutes nos salles</h1>
+      <p class="page-hero-sub">Découvrez l'ensemble de nos salles et espaces de travail</p>
+    </div>
+  </div>
+
+  <!-- ROOMS GRID -->
+  <div class="section">
+    <div class="container">
+
+      <div class="rooms-grid" th:if="${not #lists.isEmpty(rooms)}">
+        <div th:each="room : ${rooms}" class="room-card">
+          <div class="room-card-img">
+            <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" th:alt="${room.name}">
+            <div class="room-card-img-overlay"></div>
+            <div class="room-card-img-content">
+              <div class="room-card-name" th:text="${room.name}">Salle Ada Lovelace</div>
+            </div>
+          </div>
+          <div class="room-card-body">
+            <div class="room-card-badges">
+              <span class="badge badge-capacity" th:text="${room.capacity + ' PLACES'}">20 PLACES</span>
+              <span th:if="${room.available}"  class="badge badge-available">DISPONIBLE</span>
+              <span th:unless="${room.available}" class="badge badge-occupied">OCCUPÉE</span>
+            </div>
+            <div class="room-card-location" th:text="${room.location}">1er étage</div>
+            <div class="room-card-equipment">
+              <span th:if="${room.equipment != null and not #lists.isEmpty(room.equipment)}"
+                    th:text="${#strings.listJoin(room.equipment.![name], ' · ')}">Wi-Fi · Projecteur</span>
+            </div>
+            <div class="room-card-actions">
+              <a th:href="@{/rooms/{id}(id=${room.id})}" class="btn-outline">Détails</a>
+              <a th:if="${isAuthenticated}"
+                 th:href="@{/rooms/{id}(id=${room.id})}"
+                 th:classappend="${!room.available} ? ' disabled'"
+                 class="btn-primary">Réserver</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(rooms)}" class="empty-state">
+        <p>Aucune salle trouvée.</p>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

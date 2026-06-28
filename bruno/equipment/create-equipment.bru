@@ -1,0 +1,21 @@
+meta {
+  name: Create Equipment
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/equipment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Projecteur"
+  }
+}

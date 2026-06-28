@@ -1,0 +1,27 @@
+meta {
+  name: Create Room
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Salle Apollo 3",
+    "description": "Grande salle de réunion avec vue panoramique",
+    "capacity": 20,
+    "location": "Bâtiment A - Étage 2",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": [1]
+  }
+}

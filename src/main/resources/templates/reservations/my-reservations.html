@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Mes réservations</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="page-hero-label">► Mon espace</div>
+      <h1 class="page-hero-title">Mes réservations</h1>
+    </div>
+  </div>
+
+  <!-- RESERVATIONS LIST -->
+  <div class="section">
+    <div class="container">
+
+      <div class="reservations-list" th:if="${not #lists.isEmpty(reservations)}">
+        <div th:each="res : ${reservations}"
+             th:class="'reservation-item ' + ${res.status}">
+
+          <div class="reservation-item-info">
+            <div class="reservation-item-name" th:text="${res.room.name}">Salle Ada Lovelace</div>
+            <div class="reservation-item-time"
+                 th:text="${#temporals.format(res.startDateTime,'dd/MM/yyyy')}
+                          + ' · '
+                          + ${#temporals.format(res.startDateTime,'HH:mm')}
+                          + ' – '
+                          + ${#temporals.format(res.endDateTime,'HH:mm')}">
+              24/06/2026 · 09:00 – 11:00
+            </div>
+            <div class="reservation-item-purpose" th:text="${res.purpose}">Cours développement web</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px">
+            <span th:class="'status-badge status-' + ${res.status}"
+                  th:text="${res.status}">CONFIRMED</span>
+
+            <form th:if="${res.status.name() == 'PENDING' or res.status.name() == 'CONFIRMED'}"
+                  th:action="@{/reservations/{id}/cancel(id=${res.id})}"
+                  method="post" class="res-cancel-form">
+              <button type="submit" class="btn-cancel-res">Annuler</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(reservations)}" class="empty-state">
+        <p>Vous n'avez aucune réservation pour le moment.</p>
+        <a th:href="@{/rooms}" class="btn-outline btn-lg">Voir les salles</a>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

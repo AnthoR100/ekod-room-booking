@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<body>
+<footer th:fragment="footer" class="site-footer">
+
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">EKOD</div>
+      <div class="footer-address">
+        185 Rue Henri Champion<br>
+        Campus 2 – Bâtiment D<br>
+        72100 Le Mans<br>
+        02 43 21 00 24
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigation</div>
+      <div class="footer-links">
+        <a th:href="@{/}" class="footer-link">Accueil</a>
+        <a th:href="@{/rooms}" class="footer-link">Nos salles</a>
+        <a th:href="@{/reservations/me}" class="footer-link">Mes réservations</a>
+        <a th:href="@{/admin/dashboard}" class="footer-link">Administration</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Certifications</div>
+      <div class="footer-address">
+        La certification qualité a été délivrée au titre des catégories d'actions suivantes :<br>
+        • Actions de formation<br>
+        • Actions de formation par apprentissage
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 EKOD – CCI LE MANS SARTHE</div>
+    <div class="footer-legal">
+      <span>CGV</span>
+      <span>MENTIONS LÉGALES</span>
+      <span>CHARTE RGPD</span>
+    </div>
+  </div>
+
+</footer>
+</body>
+</html>

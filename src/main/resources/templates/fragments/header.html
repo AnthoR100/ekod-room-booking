@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<body>
+<header th:fragment="header">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span>EKOD Room Booking</span>
+      <span class="topbar-sep">|</span>
+      <span>Campus Le Mans</span>
+    </div>
+    <div class="topbar-social">
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"/>
+        </svg>
+      </a>
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/>
+          <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+        </svg>
+      </a>
+      <a href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-header">
+    <a th:href="@{/}" class="header-logo">
+      <div class="logo-title">EKOD</div>
+      <div class="logo-sub">Room Booking</div>
+    </a>
+    <nav class="header-nav">
+      <a th:href="@{/}"
+         th:class="${activePage == 'home'} ? 'nav-link active' : 'nav-link'">Accueil</a>
+      <a th:href="@{/rooms}"
+         th:class="${activePage == 'rooms'} ? 'nav-link active' : 'nav-link'">Salles</a>
+      <a th:if="${isAuthenticated}"
+         th:href="@{/reservations/me}"
+         th:class="${activePage == 'reservations'} ? 'nav-link active' : 'nav-link'">Mes réservations</a>
+      <a th:if="${isAdmin}"
+         th:href="@{/admin/dashboard}"
+         th:class="${activePage == 'admin'} ? 'nav-link active' : 'nav-link'">Admin</a>
+
+      <!-- Non connecté -->
+      <th:block th:unless="${isAuthenticated}">
+        <a th:href="@{/login}" class="nav-link">Connexion</a>
+        <a th:href="@{/register}" class="btn-reserve-nav">Inscription</a>
+      </th:block>
+
+      <!-- Connecté : bulle utilisateur -->
+      <div th:if="${isAuthenticated}" class="user-bubble-wrap" style="position:relative">
+        <button class="user-bubble" onclick="toggleUserMenu(event)"
+                th:title="${authenticatedUser.firstName + ' ' + authenticatedUser.lastName}">
+          <span th:text="${#strings.toUpperCase(#strings.substring(authenticatedUser.firstName,0,1))
+                          + #strings.toUpperCase(#strings.substring(authenticatedUser.lastName,0,1))}">ZS</span>
+        </button>
+        <div id="userMenu" class="user-menu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:180px;z-index:200;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:.8rem;color:#6b7280"
+               th:text="${authenticatedUser.firstName + ' ' + authenticatedUser.lastName}">Zak Salmi</div>
+          <a th:href="@{/profile}" style="display:block;padding:10px 16px;color:#111;text-decoration:none;font-size:.875rem" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">Mon profil</a>
+          <button onclick="logout()" style="display:block;width:100%;text-align:left;padding:10px 16px;border:none;background:none;color:#ef4444;font-size:.875rem;cursor:pointer" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">Se déconnecter</button>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    function toggleUserMenu(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('userMenu');
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function() {
+      const menu = document.getElementById('userMenu');
+      if (menu) menu.style.display = 'none';
+    });
+
+    async function logout() {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken })
+        }).catch(() => {});
+      }
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      window.location.href = '/login';
+    }
+  </script>
+
+</header>
+</body>
+</html>
