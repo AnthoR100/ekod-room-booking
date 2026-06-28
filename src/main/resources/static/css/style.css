@@ -134,14 +134,14 @@ main { flex: 1; }
 .equip-list { display: flex; flex-direction: column; gap: 10px; }
 .equip-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--gray-light); border-radius: 3px; border-left: 4px solid var(--red); font-size: 13px; font-weight: 500; }
 .equip-item-arrow { color: var(--red); font-weight: 700; font-size: 12px; }
-.room-info-card { background: var(--gray-light); border-radius: 4px; padding: 28px; border-top: 4px solid var(--red); position: sticky; top: 100px; }
+.room-info-card { background: var(--gray-light); border-radius: 4px; padding: 28px; border-top: 4px solid var(--red); top: 100px; }
 .room-info-card-title { font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 24px; letter-spacing: .5px; }
 .room-info-fields { display: flex; flex-direction: column; gap: 20px; }
 .room-info-label { font-size: 10px; color: #999; text-transform: uppercase; font-weight: 600; letter-spacing: 1.5px; }
 .room-info-number { font-size: 32px; font-weight: 900; color: var(--red); line-height: 1.2; }
 .room-info-unit { font-size: 11px; color: #999; }
 .room-info-value { font-size: 15px; font-weight: 700; margin-top: 4px; }
-.btn-book-room { display: block; background: var(--red); color: var(--white); padding: 14px; text-align: center; font-weight: 700; text-transform: uppercase; border-radius: 3px; font-size: 13px; margin-top: 28px; letter-spacing: 1px; transition: background .15s; }
+.btn-book-room { display: block; background: var(--red); width: 100%; color: var(--white); padding: 14px; text-align: center; font-weight: 700; text-transform: uppercase; border-radius: 3px; font-size: 13px; margin-top: 28px; letter-spacing: 1px; transition: background .15s; }
 .btn-book-room:hover { background: var(--red-dark); color: var(--white); }
 .btn-back { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: #999; font-weight: 500; transition: color .15s; }
 .btn-back:hover { color: var(--red); }

@@ -75,6 +75,17 @@ public class ReservationService {
     }
 
 
+    @Transactional(readOnly = true)
+    public long countByStatus(ReservationStatus status) {
+        return reservationRepository.findByStatus(status).size();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> findByStatus(ReservationStatus status) {
+        return reservationRepository.findByStatus(status)
+                .stream().map(reservationMapper::toResponseDto).toList();
+    }
+
     //findPending
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findPending() {

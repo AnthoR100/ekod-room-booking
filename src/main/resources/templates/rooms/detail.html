@@ -38,10 +38,10 @@
             <span class="equip-title-text">Équipements</span>
           </div>
 
-          <div class="equip-list" th:if="${room.equipment != null and not #lists.isEmpty(room.equipment)}">
-            <div th:each="eq : ${room.equipment}" class="equip-item">
+          <div class="equip-list">
+            <div th:each="equip : ${room.equipment}" class="equip-item">
               <span class="equip-item-arrow">►</span>
-              <span th:text="${eq.name}">Wi-Fi</span>
+              <span th:text="${equip.name}">Wi-Fi</span>
             </div>
           </div>
           <div th:if="${#lists.isEmpty(room.equipment)}" class="empty-state">
@@ -66,15 +66,18 @@
               <div>
                 <div class="room-info-label">Disponibilité</div>
                 <div>
-                  <span th:if="${room.available}"  class="badge badge-available" style="margin-top:4px">DISPONIBLE</span>
+                  <span th:if="${room.available}" class="badge badge-available" style="margin-top:4px">DISPONIBLE</span>
                   <span th:unless="${room.available}" class="badge badge-occupied" style="margin-top:4px">OCCUPÉE</span>
                 </div>
               </div>
             </div>
 
-            <a th:if="${room.available}"
-               th:href="@{/rooms/{id}/book(id=${room.id})}"
-               class="btn-book-room">Réserver cette salle</a>
+            <button th:if="${room.available and isAuthenticated}"
+                    onclick="openBookingModal()"
+                    class="btn-book-room">Réserver cette salle</button>
+            <a th:if="${room.available and !isAuthenticated}"
+               th:href="@{/login}"
+               class="btn-book-room">Connectez-vous pour réserver</a>
             <div th:unless="${room.available}"
                  class="btn-book-room"
                  style="opacity:.4;cursor:not-allowed">Salle indisponible</div>
@@ -89,7 +92,121 @@
 
 </main>
 
+<!-- MODALE DE RÉSERVATION -->
+<div id="bookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:8px;padding:32px;width:100%;max-width:480px;margin:16px">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h2 style="font-size:1.25rem;font-weight:700" th:text="${room.name}">Réserver</h2>
+      <button onclick="closeBookingModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;line-height:1">×</button>
+    </div>
+
+    <div id="bookingError" class="alert-error" style="display:none;margin-bottom:16px"></div>
+    <div id="bookingSuccess" class="alert-success" style="display:none;margin-bottom:16px"></div>
+
+    <div class="form-field">
+      <label class="form-label" for="startDateTime">Début</label>
+      <input id="startDateTime" type="datetime-local" class="form-input">
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="endDateTime">Fin</label>
+      <input id="endDateTime" type="datetime-local" class="form-input">
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="purpose">Objet (facultatif)</label>
+      <input id="purpose" type="text" class="form-input" placeholder="Cours, réunion…">
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="numberOfPeople">Nombre de personnes</label>
+      <input id="numberOfPeople" type="number" class="form-input" min="1" th:max="${room.capacity}" placeholder="1">
+    </div>
+
+    <button type="button" class="btn-submit" onclick="submitBooking()" style="margin-top:8px">Confirmer la réservation</button>
+  </div>
+</div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:inline="javascript">
+  const ROOM_ID = /*[[${room.id}]]*/ 0;
+
+  function openBookingModal() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+    document.getElementById('bookingModal').style.display = 'flex';
+    document.getElementById('bookingError').style.display = 'none';
+    document.getElementById('bookingSuccess').style.display = 'none';
+  }
+
+  function closeBookingModal() {
+    document.getElementById('bookingModal').style.display = 'none';
+  }
+
+  async function submitBooking() {
+    const errorEl   = document.getElementById('bookingError');
+    const successEl = document.getElementById('bookingSuccess');
+    errorEl.style.display   = 'none';
+    successEl.style.display = 'none';
+
+    const start  = document.getElementById('startDateTime').value;
+    const end    = document.getElementById('endDateTime').value;
+    const people = document.getElementById('numberOfPeople').value;
+
+    if (!start || !end || !people) {
+      errorEl.textContent = 'Veuillez remplir les champs obligatoires.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) { window.location.href = '/login'; return; }
+
+    try {
+      const res = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({
+          roomId:          ROOM_ID,
+          startDateTime:   start + ':00',
+          endDateTime:     end   + ':00',
+          purpose:         document.getElementById('purpose').value || null,
+          numberOfPeople:  parseInt(people)
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        successEl.textContent = 'Réservation envoyée ! En attente de confirmation.';
+        successEl.style.display = 'block';
+        document.getElementById('startDateTime').value  = '';
+        document.getElementById('endDateTime').value    = '';
+        document.getElementById('purpose').value        = '';
+        document.getElementById('numberOfPeople').value = '';
+      } else {
+        if (data.message) {
+          errorEl.textContent = data.message;
+        } else {
+          errorEl.textContent = Object.values(data).join(' — ');
+        }
+        errorEl.style.display = 'block';
+      }
+    } catch (_) {
+      errorEl.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  document.getElementById('bookingModal').addEventListener('click', function(e) {
+    if (e.target === this) closeBookingModal();
+  });
+</script>
 
 </body>
 </html>

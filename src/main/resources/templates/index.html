@@ -82,7 +82,9 @@
             </div>
             <div class="room-card-actions">
               <a th:href="@{/rooms/{id}(id=${room.id})}" class="btn-outline">Détails</a>
-              <a th:href="@{/rooms/{id}/book(id=${room.id})}" class="btn-primary">Réserver</a>
+              <a th:if="${isAuthenticated}"
+                 th:href="@{/rooms/{id}(id=${room.id})}"
+                 class="btn-primary">Réserver</a>
             </div>
           </div>
         </div>
