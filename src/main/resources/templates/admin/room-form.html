@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${isEdit} ? 'Modifier la salle' : 'Nouvelle salle'">Salle</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <div class="page-hero">
+    <div class="container">
+      <div class="page-hero-label">► Administration</div>
+      <h1 class="page-hero-title" th:text="${isEdit} ? 'Modifier la salle' : 'Nouvelle salle'">Salle</h1>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container" style="max-width:640px">
+
+      <div th:if="${errorMessage}" class="alert-error" style="margin-bottom:24px" th:text="${errorMessage}"></div>
+
+      <form th:action="${isEdit} ? @{/admin/rooms/{id}(id=${roomId})} : @{/admin/rooms}"
+            th:object="${roomForm}"
+            method="post">
+
+        <div class="form-field">
+          <label class="form-label" for="name">Nom *</label>
+          <input id="name" type="text" class="form-input" th:field="*{name}" placeholder="Salle Ada Lovelace">
+          <span th:if="${#fields.hasErrors('name')}" class="alert-error" style="font-size:.8rem" th:errors="*{name}"></span>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="description">Description</label>
+          <textarea id="description" class="form-input" th:field="*{description}" rows="3" placeholder="Description de la salle…" style="resize:vertical"></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label class="form-label" for="capacity">Capacité *</label>
+            <input id="capacity" type="number" class="form-input" th:field="*{capacity}" min="1" max="1000">
+            <span th:if="${#fields.hasErrors('capacity')}" class="alert-error" style="font-size:.8rem" th:errors="*{capacity}"></span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="location">Localisation</label>
+            <input id="location" type="text" class="form-input" th:field="*{location}" placeholder="Bâtiment A - Étage 2">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="imageUrl">URL de l'image</label>
+          <input id="imageUrl" type="text" class="form-input" th:field="*{imageUrl}" placeholder="https://…">
+        </div>
+
+        <div class="form-field" style="display:flex;align-items:center;gap:10px">
+          <input id="available" type="checkbox" th:field="*{available}" style="width:18px;height:18px;cursor:pointer">
+          <label for="available" class="form-label" style="margin:0;cursor:pointer">Salle disponible</label>
+        </div>
+
+        <div class="form-field" th:if="${not #lists.isEmpty(allEquipment)}">
+          <label class="form-label">Équipements</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">
+            <label th:each="equip : ${allEquipment}"
+                   style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.875rem">
+              <input type="checkbox"
+                     name="equipmentIds"
+                     th:value="${equip.id}"
+                     th:checked="${roomForm.equipmentIds != null and roomForm.equipmentIds.contains(equip.id)}"
+                     style="width:16px;height:16px">
+              <span th:text="${equip.name}">Wi-Fi</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button type="submit" class="btn-submit" style="flex:1">
+            <span th:text="${isEdit} ? 'Enregistrer les modifications' : 'Créer la salle'">Valider</span>
+          </button>
+          <a th:href="@{/admin/rooms}" class="btn-back" style="flex:1;text-align:center;padding:12px">Annuler</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

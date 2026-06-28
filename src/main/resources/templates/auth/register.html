@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Inscription</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+  <div class="auth-split">
+
+    <!-- PANNEAU GAUCHE -->
+    <div class="auth-left">
+      <div class="auth-left-mark" aria-hidden="true">►</div>
+      <div class="auth-left-content">
+        <div class="auth-left-label">► EKOD Room Booking</div>
+        <h1 class="auth-left-title">Rejoignez la<br>communauté EKOD</h1>
+        <p class="auth-left-desc">
+          Créez votre compte pour réserver des salles, suivre vos créneaux
+          et collaborer avec votre campus.
+        </p>
+        <div class="auth-left-stats">
+          <div>
+            <div class="auth-left-stat-number">6</div>
+            <div class="auth-left-stat-label">Salles</div>
+          </div>
+          <div>
+            <div class="auth-left-stat-number">24/7</div>
+            <div class="auth-left-stat-label">Accès</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNEAU DROIT — FORMULAIRE -->
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-card-title">Inscription</div>
+        </div>
+        <div class="auth-card-body">
+
+          <div id="registerSuccess" class="alert-success" style="display:none" role="status">
+            Compte créé avec succès ! Vous pouvez maintenant
+            <a th:href="@{/login}" class="auth-footer-link">vous connecter</a>.
+          </div>
+          <div id="registerError" class="alert-error" style="display:none" role="alert"></div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="form-label" for="firstName">Prénom</label>
+              <input id="firstName" type="text" class="form-input"
+                     placeholder="Jean" autocomplete="given-name">
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="lastName">Nom</label>
+              <input id="lastName" type="text" class="form-input"
+                     placeholder="Dupont" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="email">Adresse e-mail</label>
+            <input id="email" type="email" class="form-input"
+                   placeholder="votre@email.fr" autocomplete="email">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="password">Mot de passe</label>
+            <input id="password" type="password" class="form-input"
+                   placeholder="Min. 8 caractères" autocomplete="new-password">
+          </div>
+
+          <p class="form-note">
+            En créant un compte, vous acceptez les <a href="#">CGV</a>
+            et la <a href="#">charte RGPD</a> de EKOD.
+          </p>
+
+          <button type="button" class="btn-submit" onclick="handleRegister()">
+            Créer mon compte
+          </button>
+
+          <p class="auth-footer-text">
+            Déjà inscrit ?
+            <a th:href="@{/login}" class="auth-footer-link">Se connecter</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+  async function handleRegister() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const password  = document.getElementById('password').value;
+
+    const errorEl   = document.getElementById('registerError');
+    const successEl = document.getElementById('registerSuccess');
+
+    errorEl.style.display   = 'none';
+    successEl.style.display = 'none';
+
+    if (!firstName || !lastName || !email || !password) {
+      errorEl.textContent  = 'Veuillez remplir tous les champs.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    if (password.length < 8) {
+      errorEl.textContent  = 'Le mot de passe doit contenir au moins 8 caractères.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password })
+      });
+
+      if (res.ok) {
+        successEl.style.display = 'block';
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value  = '';
+        document.getElementById('email').value     = '';
+        document.getElementById('password').value  = '';
+      } else {
+        const err = await res.json().catch(() => ({}));
+        errorEl.textContent  = err.message || 'Une erreur est survenue lors de la création du compte.';
+        errorEl.style.display = 'block';
+      }
+    } catch (_) {
+      errorEl.textContent  = 'Une erreur est survenue. Veuillez réessayer.';
+      errorEl.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -16,10 +16,14 @@ auth:bearer {
 
 body:json {
   {
-    "startDateTime": "2026-07-01T09:00:00",
+    "startDateTime": "2026-06-25T09:00:00",
     "endDateTime": "2026-07-01T11:00:00",
     "purpose": "Test3",
     "numberOfPeople": 5,
     "roomId": 4
   }
+}
+
+vars:pre-request {
+  token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ6LnNhbG1pMDMwMkBnbWFpbC5jb20iLCJpYXQiOjE3ODIzOTY5MzUsImV4cCI6MTc4MjM5NzgzNX0.yyjF-D7KflK_6ccsbKc2LIkyvczTAaT-z6c6-VHWQlTOGuad6bOTuzdfSgAHvekPxRc2xK0TTN0o8XkTTyi4fw
 }

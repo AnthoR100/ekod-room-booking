@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKOD Room Booking — Mon profil</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="fade-in">
+
+  <div class="page-hero">
+    <div class="container">
+      <div class="page-hero-label">► Mon espace</div>
+      <h1 class="page-hero-title">Mon profil</h1>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container" style="max-width:560px">
+
+      <!-- Infos en lecture -->
+      <div class="room-info-card" style="margin-bottom:24px">
+        <div class="room-info-card-title">Informations du compte</div>
+        <div class="room-info-fields">
+          <div>
+            <div class="room-info-label">E-mail</div>
+            <div class="room-info-value" th:text="${user.email}">email@example.com</div>
+          </div>
+          <div>
+            <div class="room-info-label">Rôle</div>
+            <div class="room-info-value" th:text="${user.role}">ROLE_USER</div>
+          </div>
+          <div>
+            <div class="room-info-label">Membre depuis</div>
+            <div class="room-info-value" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulaire de modification -->
+      <div class="room-info-card">
+        <div class="room-info-card-title">Modifier mes informations</div>
+
+        <div id="profileError"   class="alert-error"   style="display:none;margin:16px 0"></div>
+        <div id="profileSuccess" class="alert-success" style="display:none;margin:16px 0"></div>
+
+        <div class="form-field" style="margin-top:16px">
+          <label class="form-label" for="firstName">Prénom</label>
+          <input id="firstName" type="text" class="form-input" th:value="${user.firstName}">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="lastName">Nom</label>
+          <input id="lastName" type="text" class="form-input" th:value="${user.lastName}">
+        </div>
+
+        <button type="button" class="btn-submit" onclick="updateProfile()" style="margin-top:8px">
+          Enregistrer les modifications
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+  async function updateProfile() {
+    const errorEl   = document.getElementById('profileError');
+    const successEl = document.getElementById('profileSuccess');
+    errorEl.style.display   = 'none';
+    successEl.style.display = 'none';
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+
+    if (!firstName || !lastName) {
+      errorEl.textContent = 'Le prénom et le nom sont obligatoires.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) { window.location.href = '/login'; return; }
+
+    try {
+      const res = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ firstName, lastName })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        successEl.textContent = 'Profil mis à jour avec succès.';
+        successEl.style.display = 'block';
+      } else {
+        errorEl.textContent = data.message || 'Une erreur est survenue.';
+        errorEl.style.display = 'block';
+      }
+    } catch (_) {
+      errorEl.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+      errorEl.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
