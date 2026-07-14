@@ -31,10 +31,12 @@
 
   <div class="site-header">
     <a th:href="@{/}" class="header-logo">
-      <div class="logo-title">EKOD</div>
-      <div class="logo-sub">Room Booking</div>
+      <img th:src="@{/images/logo.svg}" alt="EKOD Room Booking" height="40" />
     </a>
-    <nav class="header-nav">
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="header-nav" id="headerNav">
       <a th:href="@{/}"
          th:class="${activePage == 'home'} ? 'nav-link active' : 'nav-link'">Accueil</a>
       <a th:href="@{/rooms}"
@@ -70,15 +72,26 @@
   </div>
 
   <script>
+    function toggleNav() {
+      document.getElementById('headerNav').classList.toggle('open');
+      document.getElementById('hamburger').classList.toggle('open');
+    }
+
     function toggleUserMenu(e) {
       e.stopPropagation();
       const menu = document.getElementById('userMenu');
       menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
     }
 
-    document.addEventListener('click', function() {
+    document.addEventListener('click', function(e) {
       const menu = document.getElementById('userMenu');
       if (menu) menu.style.display = 'none';
+      const nav = document.getElementById('headerNav');
+      const hamburger = document.getElementById('hamburger');
+      if (nav && hamburger && !nav.contains(e.target) && !hamburger.contains(e.target)) {
+        nav.classList.remove('open');
+        hamburger.classList.remove('open');
+      }
     });
 
     async function logout() {

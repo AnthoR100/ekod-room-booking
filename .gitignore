@@ -34,4 +34,5 @@ build/
 
 ### Environment variables ###
 .env
+.env.docker
 .venv
