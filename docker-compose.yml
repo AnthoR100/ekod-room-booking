@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: ekod_room_booking
+    container_name: ekod_room_booking_db
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -11,5 +11,32 @@ services:
       - "5440:5432"
     volumes:
       - postgres_data_ekod_room_booking:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: ekod_room_booking_app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_SECRET: ${ADMIN_SECRET}
+      SCW_ENDPOINT: ${SCW_ENDPOINT}
+      SCW_REGION: ${SCW_REGION}
+      SCW_BUCKET: ${SCW_BUCKET}
+      SCW_ACCESS_KEY: ${SCW_ACCESS_KEY}
+      SCW_SECRET_KEY: ${SCW_SECRET_KEY}
+
 volumes:
   postgres_data_ekod_room_booking:
