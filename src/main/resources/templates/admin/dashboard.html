@@ -12,37 +12,52 @@
 
 <main class="fade-in">
 
-  <!-- PAGE HERO (Version C style) -->
   <div class="page-hero">
     <div class="container">
       <div class="page-hero-label">► Administration</div>
-      <h1 class="page-hero-title">Dashboard Admin</h1>
+      <h1 class="page-hero-title">Dashboard</h1>
+      <p class="page-hero-sub">Vue d'ensemble de l'activité et des réservations</p>
     </div>
   </div>
 
-  <!-- STAT CARDS (Version A layout) -->
+  <!-- QUICK ACTIONS -->
+  <div style="background:#f9f9f9;border-bottom:1px solid var(--gray-border);padding:14px 48px;display:flex;gap:12px;align-items:center">
+    <a th:href="@{/admin/rooms}" class="action-btn action-btn-accept" style="text-decoration:none;padding:8px 18px">+ Nouvelle salle</a>
+    <a th:href="@{/admin/rooms}" class="action-btn" style="text-decoration:none;padding:8px 18px;background:#fff;border:1px solid var(--gray-border);color:var(--black)">Gérer les salles</a>
+    <span th:if="${pendingCount > 0}"
+          style="margin-left:auto;background:var(--red);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700">
+      <span th:text="${pendingCount}">0</span> en attente de validation
+    </span>
+  </div>
+
+  <!-- STAT CARDS -->
   <div class="admin-stats-wrap">
     <div class="admin-stats-grid">
+
       <div class="admin-stat-card">
-        <div class="admin-stat-number" th:text="${totalRooms}">6</div>
+        <div class="admin-stat-number" th:text="${totalRooms}">0</div>
         <div class="admin-stat-label">Salles totales</div>
       </div>
+
       <div class="admin-stat-card navy">
-        <div class="admin-stat-number" th:text="${activeReservations}">8</div>
-        <div class="admin-stat-label">Réservations actives</div>
+        <div class="admin-stat-number" th:text="${activeReservations}">0</div>
+        <div class="admin-stat-label">Réservations confirmées</div>
       </div>
-      <div class="admin-stat-card">
-        <div class="admin-stat-number" th:text="${pendingCount}">3</div>
+
+      <div class="admin-stat-card" th:classappend="${pendingCount > 0} ? 'stat-alert' : ''">
+        <div class="admin-stat-number" th:text="${pendingCount}">0</div>
         <div class="admin-stat-label">En attente</div>
       </div>
+
       <div class="admin-stat-card navy">
-        <div class="admin-stat-number" th:text="${occupancyRate + '%'}">73%</div>
+        <div class="admin-stat-number" th:text="${occupancyRate + '%'}">0%</div>
         <div class="admin-stat-label">Taux d'occupation</div>
       </div>
+
     </div>
   </div>
 
-  <!-- TABLE SECTION (Version A layout + Version C CSS) -->
+  <!-- RESERVATIONS TABLE -->
   <div class="admin-table-section">
 
     <div class="admin-section-header">
@@ -50,34 +65,26 @@
         <span class="section-title-arrow">►</span>
         <span class="section-title-text">Réservations</span>
       </div>
-      <a th:href="@{/admin/rooms}" class="action-btn action-btn-accept" style="text-decoration:none;padding:8px 16px">Gérer les salles</a>
 
-      <!-- Filter pills -->
       <div class="filter-pills">
         <a th:href="@{/admin/dashboard}"
-           th:class="${currentFilter == null or currentFilter == 'all'} ? 'filter-pill active' : 'filter-pill'">
-          Toutes
-        </a>
+           th:class="${currentFilter == null} ? 'filter-pill active' : 'filter-pill'">Toutes</a>
         <a th:href="@{/admin/dashboard(filter=PENDING)}"
            th:class="${currentFilter == 'PENDING'} ? 'filter-pill active PENDING' : 'filter-pill'">
           En attente
+          <span th:if="${currentFilter != 'PENDING' and pendingCount > 0}"
+                style="background:var(--red);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px"
+                th:text="${pendingCount}"></span>
         </a>
         <a th:href="@{/admin/dashboard(filter=CONFIRMED)}"
-           th:class="${currentFilter == 'CONFIRMED'} ? 'filter-pill active CONFIRMED' : 'filter-pill'">
-          Confirmées
-        </a>
+           th:class="${currentFilter == 'CONFIRMED'} ? 'filter-pill active CONFIRMED' : 'filter-pill'">Confirmées</a>
         <a th:href="@{/admin/dashboard(filter=REJECTED)}"
-           th:class="${currentFilter == 'REJECTED'} ? 'filter-pill active REJECTED' : 'filter-pill'">
-          Refusées
-        </a>
+           th:class="${currentFilter == 'REJECTED'} ? 'filter-pill active REJECTED' : 'filter-pill'">Refusées</a>
         <a th:href="@{/admin/dashboard(filter=CANCELLED)}"
-           th:class="${currentFilter == 'CANCELLED'} ? 'filter-pill active CANCELLED' : 'filter-pill'">
-          Annulées
-        </a>
+           th:class="${currentFilter == 'CANCELLED'} ? 'filter-pill active CANCELLED' : 'filter-pill'">Annulées</a>
       </div>
     </div>
 
-    <!-- Table -->
     <div class="admin-table">
 
       <div class="admin-table-head">
@@ -92,37 +99,28 @@
       <div th:if="${not #lists.isEmpty(reservations)}">
         <div th:each="res : ${reservations}" class="admin-table-row">
 
-          <div class="cell-name" th:text="${res.room.name}">Salle Ada Lovelace</div>
+          <div class="cell-name" th:text="${res.room.name}">—</div>
+
+          <div class="cell-muted" th:text="${res.user.firstName + ' ' + res.user.lastName}">—</div>
+
+          <div class="cell-muted" th:text="${#temporals.format(res.startDateTime, 'dd/MM/yyyy')}">—</div>
 
           <div class="cell-muted"
-               th:text="${res.user.firstName + ' ' + res.user.lastName}">Marie Dupont</div>
-
-          <div class="cell-muted"
-               th:text="${#temporals.format(res.startDateTime, 'dd/MM/yyyy')}">24/06/2026</div>
-
-          <div class="cell-muted"
-               th:text="${#temporals.format(res.startDateTime,'HH:mm') + ' – ' + #temporals.format(res.endDateTime,'HH:mm')}">
-            09:00 – 11:00
-          </div>
+               th:text="${#temporals.format(res.startDateTime,'HH:mm') + ' – ' + #temporals.format(res.endDateTime,'HH:mm')}">—</div>
 
           <div>
-            <span th:class="'status-badge status-' + ${res.status}"
-                  th:text="${res.status}">PENDING</span>
+            <span th:class="'status-badge status-' + ${res.status}" th:text="${res.status}">—</span>
           </div>
 
           <div class="cell-actions">
-            <!-- PENDING: accept + reject -->
             <th:block th:if="${res.status.name() == 'PENDING'}">
-              <form th:action="@{/admin/reservations/{id}/confirm(id=${res.id})}"
-                    method="post" class="action-form">
+              <form th:action="@{/admin/reservations/{id}/confirm(id=${res.id})}" method="post" class="action-form">
                 <button type="submit" class="action-btn action-btn-accept">Accepter</button>
               </form>
-              <form th:action="@{/admin/reservations/{id}/reject(id=${res.id})}"
-                    method="post" class="action-form">
+              <form th:action="@{/admin/reservations/{id}/reject(id=${res.id})}" method="post" class="action-form">
                 <button type="submit" class="action-btn action-btn-reject">Refuser</button>
               </form>
             </th:block>
-            <!-- CONFIRMED: cancel -->
             <form th:if="${res.status.name() == 'CONFIRMED'}"
                   th:action="@{/admin/reservations/{id}/cancel(id=${res.id})}"
                   method="post" class="action-form">
@@ -133,8 +131,10 @@
         </div>
       </div>
 
-      <div th:if="${#lists.isEmpty(reservations)}" class="empty-state" style="padding:40px">
-        <p>Aucune réservation trouvée.</p>
+      <div th:if="${#lists.isEmpty(reservations)}" class="empty-state" style="padding:48px;text-align:center">
+        <p style="color:var(--text-muted);font-size:14px">Aucune réservation
+          <th:block th:if="${currentFilter != null}">pour le filtre <strong th:text="${currentFilter}"></strong></th:block>.
+        </p>
       </div>
 
     </div>

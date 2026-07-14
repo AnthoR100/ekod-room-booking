@@ -44,10 +44,6 @@
         </div>
         <div class="auth-card-body">
 
-          <div id="registerSuccess" class="alert-success" style="display:none" role="status">
-            Compte créé avec succès ! Vous pouvez maintenant
-            <a th:href="@{/login}" class="auth-footer-link">vous connecter</a>.
-          </div>
           <div id="registerError" class="alert-error" style="display:none" role="alert"></div>
 
           <div class="form-grid-2">
@@ -105,11 +101,9 @@
     const email     = document.getElementById('email').value.trim();
     const password  = document.getElementById('password').value;
 
-    const errorEl   = document.getElementById('registerError');
-    const successEl = document.getElementById('registerSuccess');
+    const errorEl = document.getElementById('registerError');
 
-    errorEl.style.display   = 'none';
-    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
 
     if (!firstName || !lastName || !email || !password) {
       errorEl.textContent  = 'Veuillez remplir tous les champs.';
@@ -131,11 +125,11 @@
       });
 
       if (res.ok) {
-        successEl.style.display = 'block';
-        document.getElementById('firstName').value = '';
-        document.getElementById('lastName').value  = '';
-        document.getElementById('email').value     = '';
-        document.getElementById('password').value  = '';
+        const data = await res.json();
+        localStorage.setItem('accessToken',  data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        document.cookie = `accessToken=${data.accessToken}; path=/; SameSite=Lax`;
+        window.location.href = '/';
       } else {
         const err = await res.json().catch(() => ({}));
         errorEl.textContent  = err.message || 'Une erreur est survenue lors de la création du compte.';

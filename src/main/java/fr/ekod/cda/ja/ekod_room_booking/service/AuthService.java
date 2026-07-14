@@ -3,6 +3,7 @@ package fr.ekod.cda.ja.ekod_room_booking.service;
 import fr.ekod.cda.ja.ekod_room_booking.dto.auth.AuthResponseDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.auth.LoginRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.auth.RegisterRequestDto;
+import fr.ekod.cda.ja.ekod_room_booking.dto.user.UserRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.exception.ResourceAlreadyExistsException;
 import fr.ekod.cda.ja.ekod_room_booking.model.RefreshToken;
 import fr.ekod.cda.ja.ekod_room_booking.model.User;
@@ -42,6 +43,22 @@ public class AuthService {
 
         userRepository.save(user);
 
+        return buildResponse(user);
+    }
+
+    @Transactional
+    public AuthResponseDto createAdmin(UserRequestDto dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ResourceAlreadyExistsException("Un compte avec cet email existe déjà");
+        }
+        User user = User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(dto.getRole())
+                .build();
+        userRepository.save(user);
         return buildResponse(user);
     }
 

@@ -5,6 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="'EKOD Room Booking — ' + ${room.name}">EKOD Room Booking — Salle</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    .doc-section-title { display:flex; align-items:center; gap:8px; margin:28px 0 12px; }
+    .doc-section-arrow { color:var(--red); font-size:18px; font-weight:900; }
+    .doc-section-text  { font-size:18px; font-weight:800; text-transform:uppercase; letter-spacing:-.3px; }
+    .doc-file-list { display:flex; flex-direction:column; gap:8px; }
+    .doc-file-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border:1px solid var(--gray-border); border-radius:6px; transition:border-color .15s; }
+    .doc-file-item:hover { border-color:var(--navy); }
+    .doc-file-icon { font-size:22px; flex-shrink:0; }
+    .doc-file-name { flex:1; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .doc-file-size { font-size:11px; color:var(--text-muted); flex-shrink:0; }
+    .doc-file-dl { flex-shrink:0; font-size:12px; font-weight:600; color:var(--navy); padding:5px 12px; border:1px solid var(--navy); border-radius:4px; transition:background .15s, color .15s; }
+    .doc-file-dl:hover { background:var(--navy); color:#fff; }
+    /* Flatpickr overrides */
+    .flatpickr-calendar { font-family: 'Poppins', sans-serif; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,.12); }
+    .flatpickr-day.selected, .flatpickr-day.selected:hover { background: var(--red); border-color: var(--red); }
+    .flatpickr-day:hover { background: #fde8e6; }
+    .numInputWrapper span.arrowUp:after  { border-bottom-color: var(--red); }
+    .numInputWrapper span.arrowDown:after { border-top-color: var(--red); }
+    .flatpickr-time input:focus { border-color: var(--red) !important; }
+    .fp-wrap { position:relative; }
+    .fp-wrap .fp-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--text-muted); font-size:15px; }
+  </style>
 </head>
 <body>
 
@@ -12,13 +35,14 @@
 
 <main class="fade-in">
 
-  <!-- BANNER -->
+  <!-- BANNER IMAGE -->
   <div class="room-detail-banner">
-    <img th:if="${room.imageUrl != null}" th:src="${room.imageUrl}" th:alt="${room.name}">
+    <img th:if="${room.imageUrl != null and !room.imageUrl.isEmpty()}"
+         th:src="${room.imageUrl}" th:alt="${room.name}">
     <div class="room-detail-banner-overlay"></div>
     <div class="room-detail-banner-content">
       <div class="page-hero-label">► Détail de la salle</div>
-      <h1 class="page-hero-title" th:text="${room.name}">Salle Ada Lovelace</h1>
+      <h1 class="page-hero-title" th:text="${room.name}">Salle</h1>
     </div>
   </div>
 
@@ -27,18 +51,16 @@
     <div class="container">
       <div class="room-detail-grid">
 
-        <!-- LEFT: description + equipment -->
+        <!-- LEFT: description + équipements + documents -->
         <div>
-          <p class="room-detail-desc" th:text="${room.description}">
-            Salle polyvalente idéale pour les cours et formations en groupe.
-          </p>
+          <p class="room-detail-desc" th:text="${room.description}">Description de la salle.</p>
 
+          <!-- Équipements -->
           <div class="equip-title">
             <span class="equip-title-arrow">►</span>
             <span class="equip-title-text">Équipements</span>
           </div>
-
-          <div class="equip-list">
+          <div class="equip-list" th:if="${not #lists.isEmpty(room.equipment)}">
             <div th:each="equip : ${room.equipment}" class="equip-item">
               <span class="equip-item-arrow">►</span>
               <span th:text="${equip.name}">Wi-Fi</span>
@@ -46,6 +68,24 @@
           </div>
           <div th:if="${#lists.isEmpty(room.equipment)}" class="empty-state">
             <p>Aucun équipement renseigné.</p>
+          </div>
+
+          <!-- Documents -->
+          <div th:if="${not #lists.isEmpty(roomFiles)}">
+            <div class="doc-section-title">
+              <span class="doc-section-arrow">►</span>
+              <span class="doc-section-text">Documents</span>
+            </div>
+            <div class="doc-file-list">
+              <div th:each="f : ${roomFiles}" class="doc-file-item">
+                <span class="doc-file-icon"
+                      th:text="${f.contentType == 'application/pdf'} ? '📄' : '📎'">📄</span>
+                <span class="doc-file-name" th:text="${f.filename}">document.pdf</span>
+                <span class="doc-file-size"
+                      th:text="${#numbers.formatDecimal(f.size / 1024.0, 1, 1) + ' Ko'}">0 Ko</span>
+                <a th:href="${f.downloadUrl}" target="_blank" class="doc-file-dl">Télécharger</a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -84,6 +124,23 @@
 
             <a th:href="@{/rooms}" class="btn-back">← Retour aux salles</a>
           </div>
+
+          <!-- Créneaux occupés -->
+          <div th:if="${not #lists.isEmpty(confirmedSlots)}" style="margin-top:24px">
+            <div class="equip-title">
+              <span class="equip-title-arrow">►</span>
+              <span class="equip-title-text">Créneaux occupés</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+              <div th:each="slot : ${confirmedSlots}"
+                   style="display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--gray-border);border-left:3px solid var(--red);border-radius:6px;font-size:13px">
+                <span style="font-weight:700;color:var(--black)"
+                      th:text="${#temporals.format(slot.startDateTime, 'dd/MM/yyyy')}">01/01/2025</span>
+                <span style="color:var(--text-muted)"
+                      th:text="${#temporals.format(slot.startDateTime,'HH:mm') + ' – ' + #temporals.format(slot.endDateTime,'HH:mm')}">09:00 – 11:00</span>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -93,54 +150,114 @@
 </main>
 
 <!-- MODALE DE RÉSERVATION -->
-<div id="bookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:8px;padding:32px;width:100%;max-width:480px;margin:16px">
+<div id="bookingModal"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:8px;padding:32px;width:100%;max-width:500px;margin:16px;max-height:90vh;overflow-y:auto">
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
       <h2 style="font-size:1.25rem;font-weight:700" th:text="${room.name}">Réserver</h2>
-      <button onclick="closeBookingModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;line-height:1">×</button>
+      <button onclick="closeBookingModal()"
+              style="background:none;border:none;font-size:1.5rem;cursor:pointer;line-height:1;color:var(--text-muted)">×</button>
     </div>
 
     <div id="bookingError" class="alert-error" style="display:none;margin-bottom:16px"></div>
     <div id="bookingSuccess" class="alert-success" style="display:none;margin-bottom:16px"></div>
 
+    <!-- DATE DÉBUT -->
     <div class="form-field">
-      <label class="form-label" for="startDateTime">Début</label>
-      <input id="startDateTime" type="datetime-local" class="form-input">
+      <label class="form-label" for="startDate">Date de début *</label>
+      <div class="fp-wrap">
+        <input id="startDate" type="text" class="form-input" placeholder="JJ/MM/AAAA" readonly>
+        <span class="fp-icon">📅</span>
+      </div>
     </div>
 
-    <div class="form-field">
-      <label class="form-label" for="endDateTime">Fin</label>
-      <input id="endDateTime" type="datetime-local" class="form-input">
+    <div class="form-grid-2">
+      <div class="form-field">
+        <label class="form-label" for="startTime">Heure de début *</label>
+        <div class="fp-wrap">
+          <input id="startTime" type="text" class="form-input" placeholder="09:00" readonly>
+          <span class="fp-icon">🕐</span>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="endTime">Heure de fin *</label>
+        <div class="fp-wrap">
+          <input id="endTime" type="text" class="form-input" placeholder="11:00" readonly>
+          <span class="fp-icon">🕐</span>
+        </div>
+      </div>
     </div>
 
     <div class="form-field">
       <label class="form-label" for="purpose">Objet (facultatif)</label>
-      <input id="purpose" type="text" class="form-input" placeholder="Cours, réunion…">
+      <input id="purpose" type="text" class="form-input" placeholder="Cours, réunion, atelier…">
     </div>
 
     <div class="form-field">
-      <label class="form-label" for="numberOfPeople">Nombre de personnes</label>
-      <input id="numberOfPeople" type="number" class="form-input" min="1" th:max="${room.capacity}" placeholder="1">
+      <label class="form-label" for="numberOfPeople">Nombre de personnes *</label>
+      <input id="numberOfPeople" type="number" class="form-input"
+             min="1" th:max="${room.capacity}"
+             th:placeholder="'1 à ' + ${room.capacity} + ' personnes'">
     </div>
 
-    <button type="button" class="btn-submit" onclick="submitBooking()" style="margin-top:8px">Confirmer la réservation</button>
+    <button type="button" class="btn-submit" onclick="submitBooking()" style="margin-top:8px">
+      Confirmer la réservation
+    </button>
   </div>
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 <script th:inline="javascript">
-  const ROOM_ID = /*[[${room.id}]]*/ 0;
+  const ROOM_ID  = /*[[${room.id}]]*/ 0;
+
+  // ── FLATPICKR ───────────────────────────────────────────────────────────────
+
+  const startDatePicker = flatpickr('#startDate', {
+    locale: 'fr',
+    dateFormat: 'd/m/Y',
+    minDate: 'today',
+    disableMobile: true,
+    onChange: function (dates) {
+      if (dates[0]) {
+        endTimePicker.set('minDate', null);
+        startTimePicker.set('minTime', null);
+      }
+    }
+  });
+
+  const startTimePicker = flatpickr('#startTime', {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:i',
+    time_24hr: true,
+    minuteIncrement: 15,
+    disableMobile: true,
+    onChange: function (times) {
+      if (times[0]) {
+        endTimePicker.set('minTime', times[0]);
+      }
+    }
+  });
+
+  const endTimePicker = flatpickr('#endTime', {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:i',
+    time_24hr: true,
+    minuteIncrement: 15,
+    disableMobile: true
+  });
+
+  // ── MODAL ───────────────────────────────────────────────────────────────────
 
   function openBookingModal() {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      window.location.href = '/login';
-      return;
-    }
+    if (!localStorage.getItem('accessToken')) { window.location.href = '/login'; return; }
     document.getElementById('bookingModal').style.display = 'flex';
-    document.getElementById('bookingError').style.display = 'none';
+    document.getElementById('bookingError').style.display   = 'none';
     document.getElementById('bookingSuccess').style.display = 'none';
   }
 
@@ -148,18 +265,33 @@
     document.getElementById('bookingModal').style.display = 'none';
   }
 
+  // ── SUBMIT ──────────────────────────────────────────────────────────────────
+
   async function submitBooking() {
     const errorEl   = document.getElementById('bookingError');
     const successEl = document.getElementById('bookingSuccess');
     errorEl.style.display   = 'none';
     successEl.style.display = 'none';
 
-    const start  = document.getElementById('startDateTime').value;
-    const end    = document.getElementById('endDateTime').value;
-    const people = document.getElementById('numberOfPeople').value;
+    const dateRaw   = startDatePicker.selectedDates[0];
+    const startRaw  = startTimePicker.selectedDates[0];
+    const endRaw    = endTimePicker.selectedDates[0];
+    const people    = document.getElementById('numberOfPeople').value;
 
-    if (!start || !end || !people) {
-      errorEl.textContent = 'Veuillez remplir les champs obligatoires.';
+    if (!dateRaw || !startRaw || !endRaw || !people) {
+      errorEl.textContent = 'Veuillez remplir tous les champs obligatoires.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    // Construire "YYYY-MM-DDTHH:mm:ss"
+    const pad  = n => String(n).padStart(2, '0');
+    const date = `${dateRaw.getFullYear()}-${pad(dateRaw.getMonth()+1)}-${pad(dateRaw.getDate())}`;
+    const startISO = `${date}T${pad(startRaw.getHours())}:${pad(startRaw.getMinutes())}:00`;
+    const endISO   = `${date}T${pad(endRaw.getHours())}:${pad(endRaw.getMinutes())}:00`;
+
+    if (endRaw <= startRaw) {
+      errorEl.textContent = 'L\'heure de fin doit être après l\'heure de début.';
       errorEl.style.display = 'block';
       return;
     }
@@ -172,29 +304,27 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({
-          roomId:          ROOM_ID,
-          startDateTime:   start + ':00',
-          endDateTime:     end   + ':00',
-          purpose:         document.getElementById('purpose').value || null,
-          numberOfPeople:  parseInt(people)
+          roomId:         ROOM_ID,
+          startDateTime:  startISO,
+          endDateTime:    endISO,
+          purpose:        document.getElementById('purpose').value || null,
+          numberOfPeople: parseInt(people)
         })
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        successEl.textContent = 'Réservation envoyée ! En attente de confirmation.';
+        successEl.textContent = '✓ Réservation envoyée ! En attente de confirmation.';
         successEl.style.display = 'block';
-        document.getElementById('startDateTime').value  = '';
-        document.getElementById('endDateTime').value    = '';
+        startDatePicker.clear();
+        startTimePicker.clear();
+        endTimePicker.clear();
         document.getElementById('purpose').value        = '';
         document.getElementById('numberOfPeople').value = '';
+        setTimeout(closeBookingModal, 1500);
       } else {
-        if (data.message) {
-          errorEl.textContent = data.message;
-        } else {
-          errorEl.textContent = Object.values(data).join(' — ');
-        }
+        errorEl.textContent = data.message || Object.values(data).join(' — ');
         errorEl.style.display = 'block';
       }
     } catch (_) {
@@ -203,7 +333,7 @@
     }
   }
 
-  document.getElementById('bookingModal').addEventListener('click', function(e) {
+  document.getElementById('bookingModal').addEventListener('click', function (e) {
     if (e.target === this) closeBookingModal();
   });
 </script>

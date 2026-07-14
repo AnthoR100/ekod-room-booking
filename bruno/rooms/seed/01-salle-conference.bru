@@ -1,0 +1,27 @@
+meta {
+  name: Seed - Salle Conférence
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Salle Conférence",
+    "description": "Grande salle de conférence équipée pour accueillir jusqu'à 50 personnes. Idéale pour les événements d'entreprise, présentations et formations plénières.",
+    "capacity": 50,
+    "location": "Bâtiment Principal - RDC",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}

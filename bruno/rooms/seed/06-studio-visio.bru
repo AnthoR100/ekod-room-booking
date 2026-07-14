@@ -1,0 +1,27 @@
+meta {
+  name: Seed - Studio Visio
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Studio Visio",
+    "description": "Studio dédié aux visioconférences et enregistrements. Éclairage professionnel, fond neutre, micro HF et caméra 4K inclus.",
+    "capacity": 6,
+    "location": "Bâtiment Média - RDC",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}

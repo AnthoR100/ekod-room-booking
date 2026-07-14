@@ -1,0 +1,27 @@
+meta {
+  name: Seed - Espace Créatif
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Espace Créatif",
+    "description": "Open space créatif avec mobilier modulable, tableaux blancs et zones de brainstorming. Conçu pour stimuler la créativité et la collaboration.",
+    "capacity": 20,
+    "location": "Bâtiment C - 2ème étage",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}

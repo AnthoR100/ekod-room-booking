@@ -1,0 +1,31 @@
+meta {
+  name: Create Admin
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/auth/create-admin
+  body: json
+  auth: none
+}
+
+headers {
+  X-Admin-Secret: {{adminSecret}}
+}
+
+body:json {
+  {
+    "firstName": "Admin",
+    "lastName": "EKOD",
+    "email": "admin@ekod.fr",
+    "password": "Admin1234!",
+    "role": "ROLE_ADMIN"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("token", res.body.accessToken);
+  }
+}
