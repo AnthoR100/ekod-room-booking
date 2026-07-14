@@ -21,7 +21,7 @@
   </div>
 
   <!-- QUICK ACTIONS -->
-  <div style="background:#f9f9f9;border-bottom:1px solid var(--gray-border);padding:14px 48px;display:flex;gap:12px;align-items:center">
+  <div class="admin-quick-actions" style="background:#f9f9f9;border-bottom:1px solid var(--gray-border);padding:14px 48px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <a th:href="@{/admin/rooms}" class="action-btn action-btn-accept" style="text-decoration:none;padding:8px 18px">+ Nouvelle salle</a>
     <a th:href="@{/admin/rooms}" class="action-btn" style="text-decoration:none;padding:8px 18px;background:#fff;border:1px solid var(--gray-border);color:var(--black)">Gérer les salles</a>
     <span th:if="${pendingCount > 0}"

@@ -253,3 +253,123 @@ main { flex: 1; }
 .auth-footer-text { text-align: center; font-size: 12px; color: #999; }
 .auth-footer-link { color: var(--red); font-weight: 600; }
 .auth-footer-link:hover { text-decoration: underline; color: var(--red); }
+
+/* ===== RESPONSIVE ===== */
+
+/* Hamburger button — hidden on desktop */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: none; border: none; flex-shrink: 0; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--black); border-radius: 2px; transition: all .25s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Tablet ≤ 1024px ── */
+@media (max-width: 1024px) {
+  .topbar { padding: 6px 24px; }
+  .site-header { padding: 14px 24px; }
+  .home-hero { padding: 60px 24px; }
+  .home-hero-title { font-size: 40px; }
+  .stats-band { padding: 48px 24px; }
+  .section { padding: 40px 24px; }
+  .page-hero { padding: 36px 24px; }
+  .cta-band { padding: 52px 24px; }
+  .rooms-grid { grid-template-columns: repeat(2, 1fr); }
+  .room-detail-banner-content { padding: 24px; }
+  .admin-stats-wrap { padding: 24px; }
+  .admin-table-section { padding: 24px 24px 40px; }
+  .admin-quick-actions { padding: 12px 24px !important; }
+  .site-footer { padding: 40px 24px 20px; }
+  .auth-left { padding: 48px 36px; }
+  .auth-left-title { font-size: 34px; }
+  .room-detail-grid { gap: 28px; }
+}
+
+/* ── Mobile ≤ 768px ── */
+@media (max-width: 768px) {
+  /* Topbar */
+  .topbar { display: none; }
+
+  /* Header */
+  .site-header { padding: 12px 20px; }
+  .hamburger { display: flex; }
+  .header-nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 20px 24px;
+    border-top: 2px solid var(--gray-border);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    gap: 18px;
+    z-index: 99;
+  }
+  .header-nav.open { display: flex; }
+  .btn-reserve-nav { text-align: center; }
+  .user-bubble-wrap { align-self: flex-start; }
+
+  /* Hero */
+  .home-hero { padding: 48px 20px; }
+  .home-hero-title { font-size: 30px; }
+  .home-hero-desc { font-size: 14px; }
+  .home-hero-mark { display: none; }
+
+  /* Stats band */
+  .stats-band { padding: 36px 20px; }
+  .stats-band .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .stats-band .stat-number { font-size: 42px; }
+
+  /* Sections */
+  .section { padding: 32px 20px; }
+  .page-hero { padding: 28px 20px; }
+  .page-hero-title { font-size: 26px; }
+  .cta-band { padding: 40px 20px; }
+  .cta-band-title { font-size: 26px; }
+
+  /* Rooms grid */
+  .rooms-grid { grid-template-columns: 1fr; }
+
+  /* Room detail */
+  .room-detail-banner { height: 220px; }
+  .room-detail-banner-content { padding: 20px; }
+  .room-detail-grid { grid-template-columns: 1fr; }
+
+  /* Reservations */
+  .reservation-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .btn-cancel-res { margin-left: 0; }
+
+  /* Admin */
+  .admin-quick-actions { padding: 12px 20px !important; }
+  .admin-stats-wrap { padding: 16px 20px; }
+  .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .admin-table-section { padding: 20px 20px 32px; }
+  .admin-table { overflow-x: auto; }
+  .admin-table-head,
+  .admin-table-row { min-width: 640px; }
+  .admin-section-header { flex-direction: column; align-items: flex-start; }
+
+  /* Footer */
+  .site-footer { padding: 32px 20px 20px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .footer-legal { justify-content: center; }
+
+  /* Auth */
+  .auth-split { grid-template-columns: 1fr; min-height: auto; }
+  .auth-left { display: none; }
+  .auth-right { padding: 32px 20px; min-height: calc(100vh - 60px); }
+
+  /* Forms */
+  .form-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Small mobile ≤ 480px ── */
+@media (max-width: 480px) {
+  .home-hero-title { font-size: 26px; }
+  .stats-band .stats-grid { grid-template-columns: 1fr; }
+  .page-hero-title { font-size: 22px; }
+  .cta-band-title { font-size: 22px; }
+  .admin-stats-grid { grid-template-columns: 1fr 1fr; }
+}
