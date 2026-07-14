@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(java *)"
+      "Bash(java *)",
+      "Bash(./mvnw compile *)",
+      "Bash(git checkout *)"
     ]
   }
 }

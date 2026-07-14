@@ -1,0 +1,27 @@
+meta {
+  name: Seed - Salle de Direction
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Salle de Direction",
+    "description": "Salle de conseil feutrée réservée aux réunions de direction et comités. Mobilier haut de gamme, confidentialité assurée.",
+    "capacity": 8,
+    "location": "Bâtiment Principal - 3ème étage",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}
