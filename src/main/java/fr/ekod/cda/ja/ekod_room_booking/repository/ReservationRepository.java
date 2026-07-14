@@ -44,6 +44,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("now") LocalDateTime now
     );
 
+    @Query("""
+            SELECT r FROM Reservation r
+            WHERE r.room.id = :roomId
+            AND r.status = 'CONFIRMED'
+            AND r.endDateTime >= :now
+            ORDER BY r.startDateTime ASC
+            """)
+    List<Reservation> findUpcomingConfirmedByRoomId(
+            @Param("roomId") Long roomId,
+            @Param("now") LocalDateTime now
+    );
+
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query("""

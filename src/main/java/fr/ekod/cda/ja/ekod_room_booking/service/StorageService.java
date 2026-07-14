@@ -52,6 +52,7 @@ public class StorageService {
         }
         s3.putObject(b -> b.bucket(bucket)
                         .key(key)
+                        .contentType(contentType)
                         .storageClass(StorageClass.ONEZONE_IA),
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }

@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(java *)"
+      "Bash(java *)",
+      "Bash(./mvnw compile *)",
+      "Bash(git checkout *)",
+      "Bash(openssl rand *)",
+      "Bash(./mvnw.cmd compile *)",
+      "Bash(reg query *)",
+      "Bash(xargs cat *)"
     ]
   }
 }

@@ -5,10 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${isEdit} ? 'Modifier la salle' : 'Nouvelle salle'">Salle</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
+  <style>
+    .form-section { background:#fff; border:1px solid var(--gray-border); border-radius:8px; padding:24px; margin-bottom:20px; }
+    .form-section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--red); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+    .image-preview-wrap { position:relative; width:100%; aspect-ratio:16/7; border-radius:6px; overflow:hidden; background:var(--gray-light); border:1px solid var(--gray-border); margin-bottom:12px; }
+    .image-preview-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+    .image-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--text-muted); font-size:13px; }
+    .upload-btn { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border:1.5px dashed var(--gray-border); border-radius:6px; font-size:13px; font-weight:600; color:var(--text-sec); cursor:pointer; transition:border-color .15s,color .15s; background:#fff; }
+    .upload-btn:hover:not(.disabled) { border-color:var(--red); color:var(--red); }
+    .upload-btn.disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
+    .upload-btn input[type=file] { display:none; }
+    .doc-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .doc-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--gray-light); border-radius:6px; font-size:13px; }
+    .doc-icon { font-size:20px; flex-shrink:0; }
+    .doc-name { flex:1; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .doc-size { color:var(--text-muted); font-size:11px; flex-shrink:0; }
+    .doc-actions { display:flex; gap:6px; flex-shrink:0; }
+    .doc-btn { padding:4px 10px; border-radius:4px; font-size:11px; font-weight:600; border:none; cursor:pointer; }
+    .doc-btn-dl { background:#e8f0fe; color:#1967d2; text-decoration:none; }
+    .doc-btn-del { background:#fce8e6; color:#c5221f; }
+    .upload-progress { display:none; height:3px; background:var(--gray-light); border-radius:2px; overflow:hidden; margin-top:8px; }
+    .upload-progress-bar { height:100%; background:var(--red); width:0; transition:width .3s; }
+    .upload-status { font-size:12px; color:var(--text-muted); margin-top:6px; display:none; }
+    .equip-tag { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:.875rem; padding:6px 12px; border:1px solid var(--gray-border); border-radius:20px; transition:border-color .15s; }
+    .equip-tag:hover { border-color:var(--red); }
+    .equip-tag input[type=checkbox] { width:14px; height:14px; }
+    .lock-note { font-size:12px; color:var(--text-muted); margin-top:6px; font-style:italic; }
+  </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/header :: header}"></div>
+
+<span id="roomIdData"
+      th:data-id="${isEdit ? roomId : ''}"
+      th:data-edit="${isEdit}"
+      style="display:none"></span>
 
 <main class="fade-in">
 
@@ -20,76 +52,372 @@
   </div>
 
   <div class="section">
-    <div class="container" style="max-width:640px">
+    <div class="container" style="max-width:720px">
 
-      <div th:if="${errorMessage}" class="alert-error" style="margin-bottom:24px" th:text="${errorMessage}"></div>
+      <!-- Banners -->
+<div id="ajaxSuccess" class="alert-success" style="display:none;margin-bottom:20px"></div>
+      <div id="ajaxError"   class="alert-error"   style="display:none;margin-bottom:20px"></div>
+      <div th:if="${errorMessage}" class="alert-error" style="margin-bottom:20px" th:text="${errorMessage}"></div>
 
-      <form th:action="${isEdit} ? @{/admin/rooms/{id}(id=${roomId})} : @{/admin/rooms}"
+      <!-- ── FORMULAIRE PRINCIPAL ─────────────────────────────────────────── -->
+      <!-- En mode édition : POST Thymeleaf. En mode création : intercepté par JS. -->
+      <form id="mainForm"
+            th:action="${isEdit} ? @{/admin/rooms/{id}(id=${roomId})} : @{/admin/rooms}"
             th:object="${roomForm}"
             method="post">
 
-        <div class="form-field">
-          <label class="form-label" for="name">Nom *</label>
-          <input id="name" type="text" class="form-input" th:field="*{name}" placeholder="Salle Ada Lovelace">
-          <span th:if="${#fields.hasErrors('name')}" class="alert-error" style="font-size:.8rem" th:errors="*{name}"></span>
-        </div>
+        <!-- SECTION INFORMATIONS -->
+        <div class="form-section">
+          <div class="form-section-title">► Informations</div>
 
-        <div class="form-field">
-          <label class="form-label" for="description">Description</label>
-          <textarea id="description" class="form-input" th:field="*{description}" rows="3" placeholder="Description de la salle…" style="resize:vertical"></textarea>
-        </div>
-
-        <div class="form-grid-2">
           <div class="form-field">
-            <label class="form-label" for="capacity">Capacité *</label>
-            <input id="capacity" type="number" class="form-input" th:field="*{capacity}" min="1" max="1000">
-            <span th:if="${#fields.hasErrors('capacity')}" class="alert-error" style="font-size:.8rem" th:errors="*{capacity}"></span>
+            <label class="form-label" for="name">Nom de la salle *</label>
+            <input id="name" type="text" class="form-input" th:field="*{name}" placeholder="ex. Salle Bordeaux">
+            <span th:if="${#fields.hasErrors('name')}" class="alert-error" style="font-size:.8rem" th:errors="*{name}"></span>
           </div>
+
           <div class="form-field">
-            <label class="form-label" for="location">Localisation</label>
-            <input id="location" type="text" class="form-input" th:field="*{location}" placeholder="Bâtiment A - Étage 2">
+            <label class="form-label" for="description">Description</label>
+            <textarea id="description" class="form-input" th:field="*{description}" rows="3"
+                      placeholder="Décrivez la salle, son ambiance, ses usages…" style="resize:vertical"></textarea>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="form-label" for="capacity">Capacité (personnes) *</label>
+              <input id="capacity" type="number" class="form-input" th:field="*{capacity}" min="1" max="1000" placeholder="20">
+              <span th:if="${#fields.hasErrors('capacity')}" class="alert-error" style="font-size:.8rem" th:errors="*{capacity}"></span>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="location">Localisation</label>
+              <input id="location" type="text" class="form-input" th:field="*{location}" placeholder="Bâtiment A - 1er étage">
+            </div>
           </div>
         </div>
 
-        <div class="form-field">
-          <label class="form-label" for="imageUrl">URL de l'image</label>
-          <input id="imageUrl" type="text" class="form-input" th:field="*{imageUrl}" placeholder="https://…">
+        <!-- SECTION IMAGE -->
+        <div class="form-section">
+          <div class="form-section-title">► Image de la salle</div>
+
+          <div class="image-preview-wrap" id="imagePreviewWrap">
+            <img th:if="${roomForm.imageUrl != null and !roomForm.imageUrl.isEmpty()}"
+                 th:src="${roomForm.imageUrl}" alt="Aperçu" id="imagePreview"
+                 style="width:100%;height:100%;object-fit:cover;display:block">
+            <div class="image-placeholder" id="imagePlaceholder"
+                 th:style="${roomForm.imageUrl != null and !roomForm.imageUrl.isEmpty()} ? 'display:none' : ''">
+              <span style="font-size:32px">🖼</span>
+              <span>Aucune image</span>
+            </div>
+          </div>
+
+          <label id="imageUploadLabel" class="upload-btn" for="imageFileInput">
+            <span>📤</span> Uploader une image
+            <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp,image/gif">
+          </label>
+
+          <div class="upload-progress" id="imageProgress"><div class="upload-progress-bar" id="imageProgressBar"></div></div>
+          <div class="upload-status" id="imageStatus"></div>
+
+          <div class="form-field" style="margin-top:12px">
+            <label class="form-label" for="imageUrl">URL de l'image (auto-remplie après upload)</label>
+            <input id="imageUrl" type="text" class="form-input" th:field="*{imageUrl}"
+                   placeholder="https://… ou laissez vide" style="font-size:12px;color:var(--text-muted)">
+          </div>
         </div>
 
-        <div class="form-field" style="display:flex;align-items:center;gap:10px">
-          <input id="available" type="checkbox" th:field="*{available}" style="width:18px;height:18px;cursor:pointer">
-          <label for="available" class="form-label" style="margin:0;cursor:pointer">Salle disponible</label>
-        </div>
+        <!-- SECTION DISPONIBILITÉ & ÉQUIPEMENTS -->
+        <div class="form-section">
+          <div class="form-section-title">► Disponibilité &amp; Équipements</div>
 
-        <div class="form-field" th:if="${not #lists.isEmpty(allEquipment)}">
-          <label class="form-label">Équipements</label>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">
-            <label th:each="equip : ${allEquipment}"
-                   style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.875rem">
+          <div class="form-field" style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+            <input id="available" type="checkbox" th:field="*{available}" style="width:18px;height:18px;cursor:pointer">
+            <label for="available" class="form-label" style="margin:0;cursor:pointer">Salle disponible à la réservation</label>
+          </div>
+
+          <label class="form-label" style="margin-bottom:10px;display:block">Équipements</label>
+          <div id="equipList" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+            <label th:each="equip : ${allEquipment}" class="equip-tag">
               <input type="checkbox"
                      name="equipmentIds"
                      th:value="${equip.id}"
-                     th:checked="${roomForm.equipmentIds != null and roomForm.equipmentIds.contains(equip.id)}"
-                     style="width:16px;height:16px">
+                     th:checked="${roomForm.equipmentIds != null and roomForm.equipmentIds.contains(equip.id)}">
               <span th:text="${equip.name}">Wi-Fi</span>
             </label>
+            <p th:if="${#lists.isEmpty(allEquipment)}" id="noEquipMsg"
+               style="font-size:13px;color:var(--text-muted);margin:0">Aucun équipement enregistré.</p>
+          </div>
+
+          <!-- Créer un équipement inline -->
+          <div style="border-top:1px solid var(--gray-border);padding-top:14px;margin-top:4px">
+            <label class="form-label" style="margin-bottom:8px;display:block">Créer un nouvel équipement</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="newEquipName" class="form-input" placeholder="ex. Vidéoprojecteur"
+                     style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();createEquipment();}">
+              <button type="button" onclick="createEquipment()"
+                      style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">
+                + Ajouter
+              </button>
+            </div>
+            <div id="equipStatus" style="font-size:12px;margin-top:6px;display:none"></div>
           </div>
         </div>
 
-        <div style="display:flex;gap:12px;margin-top:24px">
-          <button type="submit" class="btn-submit" style="flex:1">
-            <span th:text="${isEdit} ? 'Enregistrer les modifications' : 'Créer la salle'">Valider</span>
+        <!-- BOUTONS -->
+        <div style="display:flex;gap:12px;margin-bottom:20px">
+          <!-- Mode édition : submit classique -->
+          <button th:if="${isEdit}" type="submit" class="btn-submit" style="flex:1">
+            Enregistrer les modifications
           </button>
-          <a th:href="@{/admin/rooms}" class="btn-back" style="flex:1;text-align:center;padding:12px">Annuler</a>
+          <!-- Mode création : submit classique -->
+          <button th:unless="${isEdit}" type="submit" class="btn-submit" style="flex:1">
+            Créer la salle
+          </button>
+          <a th:href="@{/admin/rooms}" class="btn-back" style="flex:0 0 auto;text-align:center;padding:12px 24px">Annuler</a>
         </div>
 
       </form>
+
+      <!-- ── SECTION DOCUMENTS ──────────────────────────────────────────────── -->
+      <div class="form-section" id="docSection">
+        <div class="form-section-title">► Documents liés à la salle</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+          Plans de disposition, notices de vidéoprojecteur, règlements intérieurs…
+        </p>
+
+        <div class="doc-list" id="docList">
+          <div th:each="f : ${roomFiles}" th:id="'doc-' + ${f.id}" class="doc-item">
+            <span class="doc-icon" th:text="${f.contentType == 'application/pdf'} ? '📄' : '📎'">📄</span>
+            <span class="doc-name" th:text="${f.filename}">document.pdf</span>
+            <span class="doc-size" th:text="${#numbers.formatDecimal(f.size / 1024.0, 1, 1) + ' Ko'}">0 Ko</span>
+            <div class="doc-actions">
+              <a th:href="${f.downloadUrl}" target="_blank" class="doc-btn doc-btn-dl">Télécharger</a>
+              <button class="doc-btn doc-btn-del" th:onclick="'deleteDoc(' + ${f.id} + ')'">Supprimer</button>
+            </div>
+          </div>
+        </div>
+
+        <p id="docEmpty"
+           th:style="${#lists.isEmpty(roomFiles)} ? '' : 'display:none'"
+           style="color:var(--text-muted);font-size:13px;margin-bottom:16px">
+          Aucun document associé à cette salle.
+        </p>
+
+        <label id="docUploadLabel" class="upload-btn" th:classappend="${!isEdit} ? 'disabled' : ''" for="docFileInput">
+          <span>📎</span> Ajouter un document (PDF, image)
+          <input type="file" id="docFileInput" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf">
+        </label>
+        <p th:unless="${isEdit}" id="docLockNote" class="lock-note">↑ Disponible après la création de la salle</p>
+
+        <div class="upload-progress" id="docProgress"><div class="upload-progress-bar" id="docProgressBar"></div></div>
+        <div class="upload-status" id="docStatus"></div>
+      </div>
+
     </div>
   </div>
 
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:inline="javascript">
+  const IS_EDIT       = /*[[${isEdit}]]*/ false;
+  const roomIdData    = document.getElementById('roomIdData');
+  const currentRoomId = IS_EDIT ? roomIdData.dataset.id : null;
+  const token         = () => localStorage.getItem('accessToken');
+
+  // ── IMAGE UPLOAD ─────────────────────────────────────────────────────────────
+  // En création : POST /api/rooms/upload-image (pas de room ID)
+  // En édition  : POST /api/rooms/{id}/image   (lie l'image à la salle)
+
+  document.getElementById('imageFileInput').addEventListener('change', async function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const fd  = new FormData();
+    fd.append('file', file);
+
+    const url = IS_EDIT
+        ? `/api/rooms/${currentRoomId}/image`
+        : `/api/rooms/upload-image`;
+
+    showProgress('image');
+    const res = await fetch(url, {
+      method:  'POST',
+      headers: { 'Authorization': 'Bearer ' + token() },
+      body:    fd
+    });
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('imageUrl').value = data.imageUrl;
+      setImagePreview(data.imageUrl);
+      showUploadStatus('image', '✓ Image uploadée', 'green');
+    } else {
+      showUploadStatus('image', '✗ Erreur lors de l\'upload', 'red');
+    }
+    hideProgress('image');
+  });
+
+  function setImagePreview(src) {
+    const wrap = document.getElementById('imagePreviewWrap');
+    const ph   = document.getElementById('imagePlaceholder');
+    if (ph) ph.style.display = 'none';
+    let img = document.getElementById('imagePreview');
+    if (!img) {
+      img = document.createElement('img');
+      img.id = 'imagePreview';
+      img.alt = 'Aperçu';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+      wrap.appendChild(img);
+    }
+    img.src = src;
+  }
+
+  // ── DOCUMENT UPLOAD ───────────────────────────────────────────────────────────
+
+  document.getElementById('docFileInput').addEventListener('change', async function () {
+    if (!currentRoomId) return;
+    const file = this.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+
+    showProgress('doc');
+    const res = await fetch(`/api/rooms/${currentRoomId}/files`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token() },
+      body: fd
+    });
+    if (res.ok) {
+      const data = await res.json();
+      appendDocItem(data);
+      document.getElementById('docEmpty').style.display = 'none';
+      showUploadStatus('doc', '✓ Document ajouté', 'green');
+      this.value = '';
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showUploadStatus('doc', '✗ ' + (err.message || 'Erreur lors de l\'upload'), 'red');
+    }
+    hideProgress('doc');
+  });
+
+  function appendDocItem(f) {
+    const icon   = f.contentType === 'application/pdf' ? '📄' : '📎';
+    const sizeKo = (f.size / 1024).toFixed(1) + ' Ko';
+    const html   = `
+      <div class="doc-item" id="doc-${f.id}">
+        <span class="doc-icon">${icon}</span>
+        <span class="doc-name">${escHtml(f.filename)}</span>
+        <span class="doc-size">${sizeKo}</span>
+        <div class="doc-actions">
+          <a href="${f.downloadUrl}" target="_blank" class="doc-btn doc-btn-dl">Télécharger</a>
+          <button class="doc-btn doc-btn-del" onclick="deleteDoc(${f.id})">Supprimer</button>
+        </div>
+      </div>`;
+    document.getElementById('docList').insertAdjacentHTML('beforeend', html);
+  }
+
+  // ── DOCUMENT DELETE ───────────────────────────────────────────────────────────
+
+  async function deleteDoc(fileId) {
+    if (!confirm('Supprimer ce document ?')) return;
+    const res = await fetch(`/api/rooms/${currentRoomId}/files/${fileId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token() }
+    });
+    if (res.ok) {
+      document.getElementById('doc-' + fileId).remove();
+      if (document.getElementById('docList').children.length === 0) {
+        const empty = document.getElementById('docEmpty');
+        empty.textContent = 'Aucun document associé à cette salle.';
+        empty.style.display = 'block';
+      }
+    }
+  }
+
+  // ── CRÉATION D'ÉQUIPEMENT (AJAX) ─────────────────────────────────────────────
+
+  async function createEquipment() {
+    const input  = document.getElementById('newEquipName');
+    const name   = input.value.trim();
+    if (!name) return;
+
+    const statusEl = document.getElementById('equipStatus');
+    statusEl.style.display = 'none';
+
+    const res = await fetch('/api/equipment', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token() },
+      body:    JSON.stringify({ name })
+    });
+
+    if (res.ok) {
+      const equip = await res.json();
+      addEquipmentCheckbox(equip);
+      input.value = '';
+      // hide "no equip" message if present
+      const noEquip = document.getElementById('noEquipMsg');
+      if (noEquip) noEquip.remove();
+      statusEl.textContent = '✓ Équipement "' + equip.name + '" créé et sélectionné.';
+      statusEl.style.color = 'green';
+    } else {
+      const err = await res.json().catch(() => ({}));
+      statusEl.textContent = '✗ ' + (err.message || 'Erreur lors de la création.');
+      statusEl.style.color = 'red';
+    }
+    statusEl.style.display = 'block';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+  }
+
+  function addEquipmentCheckbox(equip) {
+    const label = document.createElement('label');
+    label.className = 'equip-tag';
+    label.innerHTML = `
+      <input type="checkbox" name="equipmentIds" value="${equip.id}" checked style="width:14px;height:14px">
+      <span>${escHtml(equip.name)}</span>`;
+    document.getElementById('equipList').appendChild(label);
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────────
+
+  function showProgress(prefix) {
+    document.getElementById(prefix + 'Progress').style.display = 'block';
+    let w = 0;
+    const bar = document.getElementById(prefix + 'ProgressBar');
+    bar._interval = setInterval(() => { w = Math.min(w + 8, 85); bar.style.width = w + '%'; }, 80);
+  }
+
+  function hideProgress(prefix) {
+    const bar = document.getElementById(prefix + 'ProgressBar');
+    clearInterval(bar._interval);
+    bar.style.width = '100%';
+    setTimeout(() => {
+      document.getElementById(prefix + 'Progress').style.display = 'none';
+      bar.style.width = '0';
+    }, 400);
+  }
+
+  function showUploadStatus(prefix, msg, color) {
+    const el = document.getElementById(prefix + 'Status');
+    el.textContent = msg;
+    el.style.color = color;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
+
+  function showBanner(type, msg) {
+    const success = document.getElementById('ajaxSuccess');
+    const error   = document.getElementById('ajaxError');
+    success.style.display = 'none';
+    error.style.display   = 'none';
+    if (type === 'success') { success.textContent = msg; success.style.display = 'block'; }
+    else                    { error.textContent   = msg; error.style.display   = 'block'; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
 
 </body>
 </html>

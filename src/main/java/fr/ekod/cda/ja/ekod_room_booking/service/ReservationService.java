@@ -102,6 +102,14 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> findUpcomingConfirmedByRoomId(Long roomId) {
+        return reservationRepository.findUpcomingConfirmedByRoomId(roomId, java.time.LocalDateTime.now())
+                .stream()
+                .map(reservationMapper::toResponseDto)
+                .toList();
+    }
+
     //findByUserId (admin)
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findByUserId(Long userId) {

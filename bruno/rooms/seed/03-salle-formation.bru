@@ -1,0 +1,27 @@
+meta {
+  name: Seed - Salle Formation
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Salle Formation",
+    "description": "Salle de formation modulable équipée de postes informatiques et d'un vidéoprojecteur. Parfaite pour les ateliers et sessions de montée en compétences.",
+    "capacity": 25,
+    "location": "Bâtiment B - RDC",
+    "available": true,
+    "imageUrl": null,
+    "equipmentIds": []
+  }
+}

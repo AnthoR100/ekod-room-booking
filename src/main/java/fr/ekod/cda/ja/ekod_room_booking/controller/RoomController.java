@@ -1,7 +1,9 @@
 package fr.ekod.cda.ja.ekod_room_booking.controller;
 
+import fr.ekod.cda.ja.ekod_room_booking.dto.file.RoomFileResponseDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.room.RoomRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.room.RoomResponseDto;
+import fr.ekod.cda.ja.ekod_room_booking.service.RoomFileService;
 import fr.ekod.cda.ja.ekod_room_booking.service.RoomService;
 import fr.ekod.cda.ja.ekod_room_booking.service.StorageService;
 import jakarta.validation.Valid;
@@ -16,6 +18,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -23,11 +26,15 @@ public class RoomController {
 
     private final RoomService roomService;
     private final StorageService storageService;
+    private final RoomFileService roomFileService;
 
-    public RoomController(RoomService roomService, StorageService storageService) {
+    public RoomController(RoomService roomService, StorageService storageService, RoomFileService roomFileService) {
         this.roomService = roomService;
         this.storageService = storageService;
+        this.roomFileService = roomFileService;
     }
+
+    // ── CRUD Salles ───────────────────────────────────────────────────────────
 
     @GetMapping
     public ResponseEntity<List<RoomResponseDto>> findAll() {
@@ -67,31 +74,61 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) throws Exception {
-        String key = file.getOriginalFilename();
-        storageService.upload(key, file);
-        return ResponseEntity.ok("Fichier uploadé : " + key);
-    }
+    // ── Fichiers génériques ───────────────────────────────────────────────────
 
     @GetMapping("/files")
-    public ResponseEntity<List<String>> listFiles() throws Exception {
+    public ResponseEntity<List<String>> listFiles() {
         return ResponseEntity.ok(storageService.list());
     }
 
-    @GetMapping("/files/{key}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String key) throws IOException {
+    @GetMapping("/files/download")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam String key) throws IOException {
         ResponseInputStream<GetObjectResponse> response = storageService.download(key);
         String contentType = response.response().contentType();
+        String filename = key.contains("/") ? key.substring(key.lastIndexOf('/') + 1) : key;
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + key + "\"")
-                .contentType(MediaType.parseMediaType(contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(
+                        contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .body(response.readAllBytes());
     }
 
-    @DeleteMapping("/files/{key}")
-    public ResponseEntity<Void> deleteFile(@PathVariable String key) {
-        storageService.delete(key);
+    // ── Image de salle ────────────────────────────────────────────────────────
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<Map<String, String>> uploadStandaloneImage(
+            @RequestParam("file") MultipartFile file) throws IOException {
+        String imageUrl = roomFileService.uploadStandaloneImage(file);
+        return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+    }
+
+    @PostMapping("/{id}/image")
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        String imageUrl = roomFileService.uploadImage(id, file);
+        return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+    }
+
+    // ── Documents liés à une salle ────────────────────────────────────────────
+
+    @GetMapping("/{id}/files")
+    public ResponseEntity<List<RoomFileResponseDto>> listRoomFiles(@PathVariable Long id) {
+        return ResponseEntity.ok(roomFileService.listByRoom(id));
+    }
+
+    @PostMapping("/{id}/files")
+    public ResponseEntity<RoomFileResponseDto> uploadDocument(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomFileService.uploadDocument(id, file));
+    }
+
+    @DeleteMapping("/{id}/files/{fileId}")
+    public ResponseEntity<Void> deleteRoomFile(
+            @PathVariable Long id,
+            @PathVariable Long fileId) {
+        roomFileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
     }
 }
