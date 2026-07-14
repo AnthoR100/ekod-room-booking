@@ -7,6 +7,7 @@ import fr.ekod.cda.ja.ekod_room_booking.model.User;
 import fr.ekod.cda.ja.ekod_room_booking.model.enums.ReservationStatus;
 import fr.ekod.cda.ja.ekod_room_booking.service.EquipmentService;
 import fr.ekod.cda.ja.ekod_room_booking.service.ReservationService;
+import fr.ekod.cda.ja.ekod_room_booking.service.RoomFileService;
 import fr.ekod.cda.ja.ekod_room_booking.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,7 @@ public class ViewController {
     private final RoomService roomService;
     private final ReservationService reservationService;
     private final EquipmentService equipmentService;
+    private final RoomFileService roomFileService;
 
     // ── Routes publiques ──────────────────────────────────────────────────────
 
@@ -58,12 +60,15 @@ public class ViewController {
     }
 
     @GetMapping("/rooms/{id}")
-    public String roomDetail(@PathVariable Long id, Model model) {
+    public String roomDetail(@PathVariable Long id, Model model, Authentication authentication) {
         RoomResponseDto room = roomService.findById(id);
         if (room.getEquipment() == null) {
             room.setEquipment(List.of());
         }
         model.addAttribute("room", room);
+        model.addAttribute("roomFiles", roomFileService.listByRoom(id));
+        model.addAttribute("confirmedSlots", reservationService.findUpcomingConfirmedByRoomId(id));
+        model.addAttribute("isAuthenticated", isLoggedIn(authentication));
         model.addAttribute("activePage", "rooms");
         return "rooms/detail";
     }
@@ -103,6 +108,7 @@ public class ViewController {
     public String adminRoomNew(Model model) {
         model.addAttribute("roomForm", new RoomRequestDto());
         model.addAttribute("allEquipment", equipmentService.findAll());
+        model.addAttribute("roomFiles", List.of());
         model.addAttribute("isEdit", false);
         model.addAttribute("activePage", "admin");
         return "admin/room-form";
@@ -120,14 +126,15 @@ public class ViewController {
         }
         try {
             roomService.create(dto);
+            return "redirect:/admin/rooms";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("allEquipment", equipmentService.findAll());
+            model.addAttribute("roomFiles", List.of());
             model.addAttribute("isEdit", false);
             model.addAttribute("activePage", "admin");
             return "admin/room-form";
         }
-        return "redirect:/admin/rooms";
     }
 
     @GetMapping("/admin/rooms/{id}/edit")
@@ -148,6 +155,7 @@ public class ViewController {
         model.addAttribute("roomForm", form);
         model.addAttribute("roomId", id);
         model.addAttribute("allEquipment", equipmentService.findAll());
+        model.addAttribute("roomFiles", roomFileService.listByRoom(id));
         model.addAttribute("isEdit", true);
         model.addAttribute("activePage", "admin");
         return "admin/room-form";

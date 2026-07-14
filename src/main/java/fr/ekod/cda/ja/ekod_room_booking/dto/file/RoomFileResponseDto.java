@@ -12,4 +12,5 @@ public class RoomFileResponseDto {
     private String contentType;
     private long size;
     private LocalDateTime createdAt;
+    private String downloadUrl;
 }
