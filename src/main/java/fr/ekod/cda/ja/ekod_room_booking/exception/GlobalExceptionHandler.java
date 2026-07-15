@@ -92,4 +92,10 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<Map<String, String>> handleChat(ChatException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
 }

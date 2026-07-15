@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/rooms/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/equipment/**").permitAll()
                         .requestMatchers("/api/equipment/**").hasRole("ADMIN")
+                        .requestMatchers("/api/chat/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
