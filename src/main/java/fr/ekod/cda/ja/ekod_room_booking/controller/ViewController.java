@@ -80,6 +80,11 @@ public class ViewController {
         return "auth/login";
     }
 
+    @GetMapping("/oauth2/success")
+    public String oauth2Success() {
+        return "auth/oauth2-success";
+    }
+
     @GetMapping("/register")
     public String register(Authentication authentication, Model model) {
         if (isLoggedIn(authentication)) return "redirect:/";

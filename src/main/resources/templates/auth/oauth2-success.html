@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion en cours…</title>
+</head>
+<body>
+<script>
+  const token = document.cookie.split(';')
+    .map(c => c.trim())
+    .find(c => c.startsWith('accessToken='))
+    ?.split('=').slice(1).join('=');
+
+  if (token) {
+    localStorage.setItem('accessToken', token);
+  }
+
+  window.location.replace('/');
+</script>
+</body>
+</html>
