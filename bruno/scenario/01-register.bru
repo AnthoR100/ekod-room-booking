@@ -1,0 +1,37 @@
+meta {
+  name: 01 - Inscription utilisateur
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "firstName": "E2E",
+    "lastName": "User",
+    "email": "{{e2eUserEmail}}",
+    "password": "password123"
+  }
+}
+
+script:pre-request {
+  const ts = Date.now();
+  bru.setEnvVar("e2eUserEmail", `e2e-user-${ts}@test.com`);
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("e2eUserToken", res.body.accessToken);
+  }
+}
+
+tests {
+  test("status 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+}

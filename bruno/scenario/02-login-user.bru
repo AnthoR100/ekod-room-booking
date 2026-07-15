@@ -1,0 +1,38 @@
+meta {
+  name: 02 - Connexion utilisateur
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{e2eUserEmail}}",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("e2eUserToken", res.body.accessToken);
+  }
+}
+
+tests {
+  test("status 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("accessToken présent", function() {
+    expect(res.body.accessToken).to.be.a("string");
+    expect(res.body.accessToken.length).to.be.greaterThan(0);
+  });
+  test("refreshToken présent", function() {
+    expect(res.body.refreshToken).to.be.a("string");
+    expect(res.body.refreshToken.length).to.be.greaterThan(0);
+  });
+}

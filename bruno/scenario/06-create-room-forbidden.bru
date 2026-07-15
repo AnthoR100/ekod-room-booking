@@ -1,0 +1,29 @@
+meta {
+  name: 06 - Refus création salle ROLE_USER (403)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eUserToken}}
+}
+
+body:json {
+  {
+    "name": "Salle interdite",
+    "capacity": 10,
+    "available": true
+  }
+}
+
+tests {
+  test("status 403 Forbidden pour ROLE_USER", function() {
+    expect(res.status).to.equal(403);
+  });
+}

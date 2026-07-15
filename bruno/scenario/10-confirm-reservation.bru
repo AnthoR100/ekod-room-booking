@@ -1,0 +1,27 @@
+meta {
+  name: 10 - Confirmation réservation (admin)
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/api/reservations/{{e2eReservationId}}/confirm
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eAdminToken}}
+}
+
+tests {
+  test("status 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("statut CONFIRMED", function() {
+    expect(res.body.status).to.equal("CONFIRMED");
+  });
+  test("id correspond à la réservation créée", function() {
+    expect(res.body.id).to.be.a("number");
+  });
+}
