@@ -1,0 +1,51 @@
+meta {
+  name: 07 - Création salle (admin)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/rooms
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eAdminToken}}
+}
+
+body:json {
+  {
+    "name": "{{e2eRoomName}}",
+    "description": "Salle créée par le scénario E2E",
+    "capacity": 10,
+    "location": "Salle E2E",
+    "available": true
+  }
+}
+
+script:pre-request {
+  const ts = Date.now();
+  bru.setEnvVar("e2eRoomName", `E2E-Room-${ts}`);
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("e2eRoomId", String(res.body.id));
+  }
+}
+
+tests {
+  test("status 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("id de salle présent", function() {
+    expect(res.body.id).to.be.a("number");
+  });
+  test("salle disponible par défaut", function() {
+    expect(res.body.available).to.equal(true);
+  });
+  test("capacité correcte", function() {
+    expect(res.body.capacity).to.equal(10);
+  });
+}

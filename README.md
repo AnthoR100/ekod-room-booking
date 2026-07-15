@@ -229,14 +229,68 @@ La base de données Docker est exposée sur le port `5440`.
 
 ---
 
+## Stratégie de test
+
+### Couverture par grandes catégories
+
+| Niveau | Ce qu'on vérifie | Outil | Emplacement |
+|---|---|---|---|
+| **Unitaire** | Logique métier isolée (services, mappers, validateurs) sans dépendance externe | JUnit 5 + Mockito | `src/test/java/.../service/` |
+| **Intégration base de données** | Requêtes JPA, contraintes, migrations Flyway sur une vraie base | Spring Boot Test + H2 (mode PostgreSQL) | `src/test/java/.../repository/` |
+| **Intégration API** | Endpoints REST : codes HTTP, sérialisation JSON, sécurité (auth/rôles) | MockMvc + Spring Security Test | `src/test/java/.../controller/` |
+| **Système** | Parcours utilisateur complets (inscription → réservation → validation admin) | Collection Bruno (`/bruno`) exécutée manuellement | `bruno/` |
+
+### Ce qui n'est PAS couvert, et pourquoi
+
+- **Les vues Thymeleaf** ne sont pas testées automatiquement : le coût d'automatisation IHM (Selenium, Playwright) est disproportionné pour ce projet, elles sont vérifiées manuellement.
+- **L'intégration Scaleway S3** n'est pas testée : appeler un service cloud payant en CI introduit des dépendances externes, des coûts et de la fragilité. Le service est mocké en test unitaire.
+- **Les cas de charge et de performance** ne sont pas couverts : hors périmètre pour une application de gestion interne à faible trafic.
+- **Les tests exhaustifs sont impossibles** : on couvre les chemins critiques (happy path + principaux cas d'erreur), pas toutes les combinaisons d'entrées possibles.
+
+---
+
 ## Tests
 
-Le projet inclut une collection **Bruno** dans le dossier `/bruno`, organisée par fonctionnalité (auth, rooms, equipment, reservations, users, files), pour tester l'API REST manuellement.
-
-Pour les tests automatisés :
+### Tests unitaires et d'intégration
 
 ```bash
 ./mvnw test
 ```
 
 Les tests utilisent une base H2 en mémoire configurée indépendamment de l'environnement de développement.
+
+### Tests E2E — Scénario Bruno
+
+La collection Bruno est versionnée dans `/bruno`, organisée par fonctionnalité (auth, rooms, equipment, reservations, users, files) et par scénario de bout en bout (`bruno/scenario/`).
+
+**Prérequis** : l'application doit être démarrée sur `http://localhost:8080`.
+
+```bash
+docker-compose up -d
+```
+
+**Lancer le scénario complet en ligne de commande :**
+
+```bash
+cd bruno
+npx @usebruno/cli run scenario --env Local
+```
+
+**Ou depuis l'UI Bruno :** clic droit sur le dossier *Scenario E2E* → *Run* → environnement *Local*.
+
+Le scénario couvre 12 requêtes avec assertions, du début à la fin du cycle de vie d'un utilisateur :
+
+| # | Requête | Code attendu |
+|---|---------|-------------|
+| 01 | Inscription (email dynamique) | 201 |
+| 02 | Connexion, récupération du token | 200 |
+| 03 | Accès sans token → refusé | 401 |
+| 04 | Inscription email invalide → refusé | 400 |
+| 05 | Création compte admin | 201 |
+| 06 | Création salle avec `ROLE_USER` → refusé | 403 |
+| 07 | Création salle (admin) | 201 |
+| 08 | Réservation avec dates futures dynamiques | 201 PENDING |
+| 09 | Dépassement de capacité → refusé | 400 |
+| 10 | Confirmation de la réservation (admin) | 200 CONFIRMED |
+| 11 | Double réservation (salle indisponible) → refusé | 409 |
+| 12 | Annulation par le propriétaire | 200 CANCELLED |
