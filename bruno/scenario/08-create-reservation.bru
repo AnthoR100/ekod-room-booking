@@ -1,0 +1,64 @@
+meta {
+  name: 08 - Création réservation
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/reservations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eUserToken}}
+}
+
+body:json {
+  {
+    "roomId": {{e2eRoomId}},
+    "startDateTime": "{{e2eStartDate}}",
+    "endDateTime": "{{e2eEndDate}}",
+    "numberOfPeople": 5,
+    "purpose": "Réunion E2E"
+  }
+}
+
+script:pre-request {
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function fmt(d) {
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate())
+      + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+
+  const start = new Date();
+  start.setDate(start.getDate() + 7);
+  start.setHours(14, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setHours(16, 0, 0, 0);
+
+  bru.setEnvVar("e2eStartDate", fmt(start));
+  bru.setEnvVar("e2eEndDate", fmt(end));
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("e2eReservationId", String(res.body.id));
+  }
+}
+
+tests {
+  test("status 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("statut PENDING", function() {
+    expect(res.body.status).to.equal("PENDING");
+  });
+  test("id de réservation présent", function() {
+    expect(res.body.id).to.be.a("number");
+  });
+  test("nombre de personnes enregistré", function() {
+    expect(res.body.numberOfPeople).to.equal(5);
+  });
+}

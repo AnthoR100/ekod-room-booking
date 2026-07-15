@@ -1,0 +1,35 @@
+meta {
+  name: 09 - Refus dépassement capacité (400)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/reservations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eUserToken}}
+}
+
+body:json {
+  {
+    "roomId": {{e2eRoomId}},
+    "startDateTime": "{{e2eStartDate}}",
+    "endDateTime": "{{e2eEndDate}}",
+    "numberOfPeople": 9999,
+    "purpose": "Test dépassement capacité"
+  }
+}
+
+tests {
+  test("status 400 Bad Request (capacité dépassée)", function() {
+    expect(res.status).to.equal(400);
+  });
+  test("message d'erreur présent", function() {
+    expect(res.body.error).to.be.a("string");
+    expect(res.body.error.length).to.be.greaterThan(0);
+  });
+}

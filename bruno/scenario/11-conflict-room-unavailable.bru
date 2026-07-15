@@ -1,0 +1,35 @@
+meta {
+  name: 11 - Refus conflit salle indisponible (409)
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/reservations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eUserToken}}
+}
+
+body:json {
+  {
+    "roomId": {{e2eRoomId}},
+    "startDateTime": "{{e2eStartDate}}",
+    "endDateTime": "{{e2eEndDate}}",
+    "numberOfPeople": 3,
+    "purpose": "Tentative de double réservation"
+  }
+}
+
+tests {
+  test("status 409 Conflict (salle indisponible)", function() {
+    expect(res.status).to.equal(409);
+  });
+  test("message de conflit présent", function() {
+    expect(res.body.message).to.be.a("string");
+    expect(res.body.message.length).to.be.greaterThan(0);
+  });
+}

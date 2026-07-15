@@ -1,0 +1,29 @@
+meta {
+  name: 04 - Refus email invalide (400)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "firstName": "Test",
+    "lastName": "Invalid",
+    "email": "pas-un-email",
+    "password": "password123"
+  }
+}
+
+tests {
+  test("status 400 Bad Request", function() {
+    expect(res.status).to.equal(400);
+  });
+  test("erreur sur le champ email", function() {
+    expect(res.body).to.have.property("email");
+  });
+}

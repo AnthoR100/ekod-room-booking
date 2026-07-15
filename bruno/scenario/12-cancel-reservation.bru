@@ -1,0 +1,27 @@
+meta {
+  name: 12 - Annulation réservation (utilisateur propriétaire)
+  type: http
+  seq: 12
+}
+
+patch {
+  url: {{baseUrl}}/api/reservations/{{e2eReservationId}}/cancel
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{e2eUserToken}}
+}
+
+tests {
+  test("status 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("statut CANCELLED", function() {
+    expect(res.body.status).to.equal("CANCELLED");
+  });
+  test("id correspond à la réservation annulée", function() {
+    expect(res.body.id).to.be.a("number");
+  });
+}
