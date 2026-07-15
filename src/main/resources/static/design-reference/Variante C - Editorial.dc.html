@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;font-family:'Poppins',sans-serif;color:#1A1A1A;background:#fff">
+
+<!-- TOP BAR -->
+<div style="background:#1A1A1A;padding:6px 48px;display:flex;justify-content:space-between;align-items:center;font-size:11px">
+<div style="display:flex;gap:20px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;font-weight:500">
+<span>EKOD Room Booking</span>
+<span style="opacity:.3">|</span>
+<span>Campus Le Mans</span>
+</div>
+<div style="display:flex;gap:14px;align-items:center">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"></path></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="12" cy="12" r="5"></circle></svg>
+</div>
+</div>
+
+<!-- HEADER -->
+<div style="background:#fff;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #F0F0F0;position:sticky;top:0;z-index:100">
+<div onClick="{{ goHome }}" style="cursor:pointer">
+<div style="font-size:34px;font-weight:900;color:#1A1A1A;letter-spacing:-1px;line-height:1">EKOD</div>
+<div style="font-size:7px;color:#999;text-transform:uppercase;letter-spacing:2.5px;font-weight:600;margin-top:1px">Room Booking</div>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<span onClick="{{ goHome }}" style="cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#1A1A1A" style-hover="color:#E42313">Accueil</span>
+<span onClick="{{ goRooms }}" style="cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#1A1A1A" style-hover="color:#E42313">Salles</span>
+<span onClick="{{ goMyReservations }}" style="cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#1A1A1A" style-hover="color:#E42313">Mes réservations</span>
+<span onClick="{{ goAdmin }}" style="cursor:pointer;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#1A1A1A" style-hover="color:#E42313">Admin</span>
+<div onClick="{{ goBookingDefault }}" style="background:#E42313;color:#fff;padding:10px 28px;border-radius:24px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;cursor:pointer" style-hover="background:#c41f10">Réserver</div>
+</div>
+</div>
+
+<!-- CONTENT -->
+<div style="flex:1">
+
+<!-- ===== HOME ===== -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="animation:fadeIn .3s ease">
+
+<!-- Hero — SPLIT 50/50 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;min-height:480px">
+<div style="background:#1C2B4B;padding:72px 56px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden">
+<div style="position:absolute;right:-40px;bottom:-40px;font-size:300px;font-weight:900;color:rgba(228,35,19,.05);line-height:1;pointer-events:none">►</div>
+<div style="position:relative;z-index:1">
+<div style="font-size:13px;font-weight:700;color:#E42313;text-transform:uppercase;letter-spacing:3px;margin-bottom:20px">► EKOD Room Booking</div>
+<div style="font-size:44px;font-weight:900;color:#fff;text-transform:uppercase;line-height:1.05;letter-spacing:-1px">Réservez votre salle en quelques clics</div>
+<div style="color:rgba(255,255,255,.55);font-size:15px;margin-top:20px;line-height:1.7;max-width:480px">Trouvez et réservez la salle idéale pour vos cours, réunions et événements au sein du campus EKOD.</div>
+<div style="display:flex;gap:14px;margin-top:36px">
+<div onClick="{{ goRooms }}" style="background:#E42313;color:#fff;padding:14px 32px;border-radius:4px;font-weight:700;text-transform:uppercase;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .15s" style-hover="background:#c41f10">Voir les salles</div>
+<div onClick="{{ goBookingDefault }}" style="border:2px solid rgba(255,255,255,.3);color:#fff;padding:12px 32px;border-radius:4px;font-weight:700;text-transform:uppercase;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .15s" style-hover="border-color:#fff">Réserver</div>
+</div>
+</div>
+</div>
+<div style="background:repeating-linear-gradient(45deg,#c0c0c0,#c0c0c0 12px,#ccc 12px,#ccc 24px);position:relative;display:flex;align-items:center;justify-content:center">
+<div style="position:absolute;inset:0;background:rgba(28,43,75,.08)"></div>
+<div style="font-family:monospace;font-size:13px;color:#888;background:rgba(255,255,255,.9);padding:8px 16px;border-radius:3px;position:relative;z-index:1">photo campus EKOD</div>
+</div>
+</div>
+
+<!-- Stats band — horizontal red -->
+<div style="background:#E42313;padding:40px 48px">
+<div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center">
+<div>
+<div style="font-size:48px;font-weight:900;color:#fff;line-height:1">{{ totalRooms }}</div>
+<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;margin-top:6px;letter-spacing:.5px">Salles équipées</div>
+</div>
+<div>
+<div style="font-size:48px;font-weight:900;color:#fff;line-height:1">{{ activeReservations }}</div>
+<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;margin-top:6px;letter-spacing:.5px">Réservations actives</div>
+</div>
+<div>
+<div style="font-size:48px;font-weight:900;color:#fff;line-height:1">{{ occupancyRate }}%</div>
+<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;margin-top:6px;letter-spacing:.5px">Taux d'occupation</div>
+</div>
+<div>
+<div style="font-size:48px;font-weight:900;color:#fff;line-height:1">24/7</div>
+<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;margin-top:6px;letter-spacing:.5px">Accès en ligne</div>
+</div>
+</div>
+</div>
+
+<!-- Available Rooms — HORIZONTAL LIST -->
+<div style="padding:64px 48px;max-width:1100px;margin:0 auto">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<span style="color:#E42313;font-size:20px;font-weight:900">►</span>
+<div style="font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px">Salles disponibles</div>
+</div>
+<div style="font-size:14px;color:#888;margin-bottom:36px">Réservez dès maintenant l'une de nos salles équipées</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<sc-for list="{{ availableRooms }}" as="room" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:260px 1fr auto;border:1px solid #eee;border-radius:6px;overflow:hidden;transition:all .2s" style-hover="border-color:#E42313">
+<div style="background:repeating-linear-gradient(45deg,#c4c4c4,#c4c4c4 8px,#d0d0d0 8px,#d0d0d0 16px);position:relative;min-height:140px">
+<div style="position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(28,43,75,.5))"></div>
+<div style="position:absolute;top:10px;right:10px;font-family:monospace;font-size:8px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:2px">photo</div>
+<div style="position:absolute;bottom:10px;left:10px;background:#E42313;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px;z-index:1">{{ room.capacity }} PLACES</div>
+</div>
+<div style="padding:20px 24px;display:flex;flex-direction:column;justify-content:center">
+<div style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:-.3px">{{ room.name }}</div>
+<div style="font-size:12px;color:#888;margin-top:4px">{{ room.floor }}</div>
+<div style="font-size:12px;color:#666;margin-top:6px">{{ room.equipmentStr }}</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:20px 24px;justify-content:center;border-left:1px solid #eee">
+<div onClick="{{ room.onDetail }}" style="padding:10px 24px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;border:2px solid #1A1A1A;border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;white-space:nowrap" style-hover="background:#1A1A1A;color:#fff">Détails</div>
+<div onClick="{{ room.onBook }}" style="padding:10px 24px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;background:#E42313;color:#fff;border:2px solid #E42313;border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;white-space:nowrap" style-hover="background:#c41f10;border-color:#c41f10">Réserver</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="text-align:center;margin-top:40px">
+<div onClick="{{ goRooms }}" style="display:inline-block;padding:12px 36px;border:2px solid #1A1A1A;border-radius:4px;font-weight:700;font-size:13px;text-transform:uppercase;cursor:pointer;letter-spacing:.5px;transition:all .15s" style-hover="background:#1A1A1A;color:#fff">Voir toutes les salles</div>
+</div>
+</div>
+
+<!-- CTA -->
+<div style="background:#1C2B4B;padding:64px 48px;display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center">
+<div>
+<div style="font-size:34px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">Besoin d'une salle ?</div>
+<div style="color:rgba(255,255,255,.5);font-size:15px;margin-top:10px">Réservez en quelques clics et gérez vos créneaux en toute simplicité</div>
+</div>
+<div onClick="{{ goBookingDefault }}" style="background:#E42313;color:#fff;padding:18px 48px;font-weight:800;font-size:14px;text-transform:uppercase;border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;white-space:nowrap" style-hover="background:#c41f10">Réserver maintenant</div>
+</div>
+
+</div>
+</sc-if>
+
+<!-- ===== ROOMS LIST — HORIZONTAL CARDS ===== -->
+<sc-if value="{{ isRooms }}">
+<div style="animation:fadeIn .3s ease">
+<div style="background:#1C2B4B;padding:44px 48px">
+<div style="max-width:1100px;margin:0 auto">
+<div style="font-size:13px;color:#E42313;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">► Nos espaces</div>
+<div style="font-size:38px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">Toutes nos salles</div>
+<div style="color:rgba(255,255,255,.5);font-size:14px;margin-top:8px">Découvrez l'ensemble de nos salles et espaces de travail</div>
+</div>
+</div>
+<div style="padding:48px;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+<sc-for list="{{ rooms }}" as="room" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:280px 1fr auto;border:1px solid #eee;border-radius:6px;overflow:hidden;transition:all .2s" style-hover="border-color:#E42313">
+<div style="background:repeating-linear-gradient(45deg,#c4c4c4,#c4c4c4 8px,#d0d0d0 8px,#d0d0d0 16px);position:relative;min-height:150px">
+<div style="position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(28,43,75,.5))"></div>
+<div style="position:absolute;top:10px;right:10px;font-family:monospace;font-size:8px;color:#aaa;background:rgba(255,255,255,.85);padding:2px 6px;border-radius:2px">photo</div>
+<div style="position:absolute;bottom:10px;left:10px;display:flex;gap:6px;z-index:1">
+<div style="background:#E42313;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px">{{ room.capacity }} PLACES</div>
+<div style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px;background:{{ room.statusBg }};color:{{ room.statusColor }}">{{ room.statusText }}</div>
+</div>
+</div>
+<div style="padding:20px 28px;display:flex;flex-direction:column;justify-content:center">
+<div style="font-size:19px;font-weight:800;text-transform:uppercase;letter-spacing:-.3px">{{ room.name }}</div>
+<div style="font-size:12px;color:#888;margin-top:4px">{{ room.floor }}</div>
+<div style="font-size:12px;color:#666;margin-top:8px;line-height:1.6">{{ room.equipmentStr }}</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:20px 24px;justify-content:center;border-left:1px solid #eee">
+<div onClick="{{ room.onDetail }}" style="padding:10px 24px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;border:2px solid #1A1A1A;border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;white-space:nowrap" style-hover="background:#1A1A1A;color:#fff">Détails</div>
+<div onClick="{{ room.onBook }}" style="padding:10px 24px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;background:#E42313;color:#fff;border:2px solid #E42313;border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;white-space:nowrap" style-hover="background:#c41f10;border-color:#c41f10">Réserver</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== ROOM DETAIL — FULL-WIDTH PHOTO + CONTENT ===== -->
+<sc-if value="{{ isRoomDetail }}">
+<div style="animation:fadeIn .3s ease">
+<div style="background:repeating-linear-gradient(45deg,#bbb,#bbb 12px,#c8c8c8 12px,#c8c8c8 24px);height:320px;position:relative;display:flex;align-items:flex-end">
+<div style="position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(26,26,26,.85))"></div>
+<div style="position:absolute;top:16px;right:16px;font-family:monospace;font-size:11px;color:#999;background:rgba(255,255,255,.85);padding:4px 10px;border-radius:2px">photo panoramique de la salle</div>
+<div style="position:relative;z-index:1;padding:36px 48px;width:100%">
+<div style="font-size:13px;color:#E42313;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">► Détail de la salle</div>
+<div style="font-size:42px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">{{ selectedRoom.name }}</div>
+</div>
+</div>
+<div style="padding:48px;max-width:1100px;margin:0 auto">
+<div style="display:grid;grid-template-columns:1fr 340px;gap:48px">
+<div>
+<div style="font-size:15px;color:#555;line-height:1.8;margin-bottom:36px">{{ selectedRoom.description }}</div>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+<span style="color:#E42313;font-size:18px;font-weight:900">►</span>
+<div style="font-size:20px;font-weight:800;text-transform:uppercase">Équipements</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<sc-for list="{{ selectedRoomEquipment }}" as="eq" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#F5F5F5;border-radius:4px;border-left:4px solid #E42313">
+<span style="color:#E42313;font-weight:700;font-size:12px">►</span>
+<span style="font-size:13px;font-weight:500">{{ eq.name }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div>
+<div style="background:#F5F5F5;border-radius:6px;padding:28px;border-top:4px solid #E42313;position:sticky;top:100px">
+<div style="font-size:14px;font-weight:800;text-transform:uppercase;margin-bottom:24px;letter-spacing:.5px">Informations</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div>
+<div style="font-size:10px;color:#999;text-transform:uppercase;font-weight:600;letter-spacing:1.5px">Capacité</div>
+<div style="font-size:36px;font-weight:900;color:#E42313;line-height:1.2">{{ selectedRoom.capacity }}</div>
+<div style="font-size:11px;color:#999">personnes max.</div>
+</div>
+<div>
+<div style="font-size:10px;color:#999;text-transform:uppercase;font-weight:600;letter-spacing:1.5px">Localisation</div>
+<div style="font-size:16px;font-weight:700;margin-top:4px">{{ selectedRoom.floor }}</div>
+</div>
+</div>
+<div onClick="{{ bookSelectedRoom }}" style="background:#E42313;color:#fff;padding:14px;text-align:center;font-weight:700;text-transform:uppercase;border-radius:4px;font-size:13px;margin-top:28px;cursor:pointer;letter-spacing:1px;transition:all .15s" style-hover="background:#c41f10">Réserver cette salle</div>
+<div onClick="{{ goRooms }}" style="text-align:center;margin-top:12px;font-size:12px;color:#999;cursor:pointer;font-weight:500" style-hover="color:#E42313">← Retour aux salles</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== MY RESERVATIONS — CARDS ===== -->
+<sc-if value="{{ isMyReservations }}">
+<div style="animation:fadeIn .3s ease">
+<div style="background:#1C2B4B;padding:44px 48px">
+<div style="max-width:1100px;margin:0 auto">
+<div style="font-size:13px;color:#E42313;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">► Mon espace</div>
+<div style="font-size:38px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">Mes réservations</div>
+</div>
+</div>
+<div style="padding:48px;max-width:1100px;margin:0 auto">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<sc-for list="{{ myReservations }}" as="res" hint-placeholder-count="4">
+<div style="border:1px solid #eee;border-radius:6px;overflow:hidden;transition:all .15s" style-hover="border-color:#ccc">
+<div style="padding:4px 20px;background:{{ res.statusBg }};display:flex;justify-content:space-between;align-items:center">
+<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:{{ res.statusColor }}">{{ res.status }}</span>
+<span style="font-size:11px;color:{{ res.statusColor }};font-weight:600">{{ res.date }}</span>
+</div>
+<div style="padding:20px">
+<div style="font-size:16px;font-weight:700;margin-bottom:4px">{{ res.roomName }}</div>
+<div style="font-size:12px;color:#888;margin-bottom:8px">{{ res.start }} – {{ res.end }}</div>
+<div style="font-size:12px;color:#666;border-top:1px solid #eee;padding-top:8px">{{ res.purpose }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== BOOKING — STACKED ===== -->
+<sc-if value="{{ isBooking }}">
+<div style="animation:fadeIn .3s ease">
+<div style="background:#1C2B4B;padding:44px 48px">
+<div style="max-width:1100px;margin:0 auto">
+<div style="font-size:13px;color:#E42313;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">► Réservation</div>
+<div style="font-size:38px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">Réserver une salle</div>
+<div style="color:rgba(255,255,255,.5);font-size:14px;margin-top:8px">{{ bookingRoomName }} · {{ bookingRoomCapacity }} places</div>
+</div>
+</div>
+<div style="padding:48px;max-width:760px;margin:0 auto">
+<sc-if value="{{ showBookingSuccess }}">
+<div style="background:#E8F5E9;border:2px solid #2E7D32;border-radius:6px;padding:32px;text-align:center;margin-bottom:32px">
+<div style="font-size:22px;font-weight:800;color:#1B5E20;text-transform:uppercase">Réservation envoyée !</div>
+<div style="font-size:13px;color:#2E7D32;margin-top:8px">Votre demande a été soumise avec succès.</div>
+<div onClick="{{ goMyReservations }}" style="display:inline-block;margin-top:16px;padding:10px 24px;background:#2E7D32;color:#fff;font-weight:700;font-size:12px;text-transform:uppercase;border-radius:4px;cursor:pointer" style-hover="background:#1B5E20">Voir mes réservations</div>
+</div>
+</sc-if>
+<div style="background:#fff;border:1px solid #eee;border-radius:6px;overflow:hidden">
+<div style="background:#E42313;padding:20px 28px">
+<div style="font-size:16px;font-weight:800;text-transform:uppercase;color:#fff;letter-spacing:.5px">Formulaire de réservation</div>
+</div>
+<div style="padding:28px;display:flex;flex-direction:column;gap:20px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:6px">Date</div>
+<input type="date" value="{{ bookingDate }}" onChange="{{ onDateChange }}" style="width:100%;padding:12px 14px;border:2px solid #eee;border-radius:4px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;box-sizing:border-box;background:#FAFAFA" />
+</div>
+<div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:6px">Personnes</div>
+<input type="number" value="{{ bookingPeople }}" onChange="{{ onPeopleChange }}" min="1" max="50" style="width:100%;padding:12px 14px;border:2px solid #eee;border-radius:4px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;box-sizing:border-box;background:#FAFAFA" />
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:6px">Heure de début</div>
+<input type="time" value="{{ bookingStartTime }}" onChange="{{ onStartTimeChange }}" style="width:100%;padding:12px 14px;border:2px solid #eee;border-radius:4px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;box-sizing:border-box;background:#FAFAFA" />
+</div>
+<div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:6px">Heure de fin</div>
+<input type="time" value="{{ bookingEndTime }}" onChange="{{ onEndTimeChange }}" style="width:100%;padding:12px 14px;border:2px solid #eee;border-radius:4px;font-family:'Poppins',sans-serif;font-size:13px;outline:none;box-sizing:border-box;background:#FAFAFA" />
+</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;letter-spacing:1px;margin-bottom:6px">Objet de la réservation</div>
+<textarea value="{{ bookingPurpose }}" onChange="{{ onPurposeChange }}" placeholder="Ex : Cours de développement web, réunion de projet..." style="width:100%;padding:12px 14px;border:2px solid #eee;border-radius:4px;font-family:'Poppins',sans-serif;font-size:13px;min-height:80px;resize:vertical;outline:none;box-sizing:border-box;background:#FAFAFA"></textarea>
+</div>
+<div onClick="{{ submitBooking }}" style="background:#E42313;color:#fff;padding:16px;text-align:center;font-weight:700;text-transform:uppercase;border-radius:4px;font-size:14px;cursor:pointer;letter-spacing:1px;transition:all .15s" style-hover="background:#c41f10">Confirmer la réservation</div>
+</div>
+</div>
+<div onClick="{{ goRooms }}" style="text-align:center;margin-top:16px;font-size:12px;color:#999;cursor:pointer;font-weight:500" style-hover="color:#E42313">← Retour aux salles</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== ADMIN — SIDEBAR LAYOUT ===== -->
+<sc-if value="{{ isAdmin }}">
+<div style="animation:fadeIn .3s ease">
+<div style="background:#1C2B4B;padding:44px 48px">
+<div style="max-width:1200px;margin:0 auto">
+<div style="font-size:13px;color:#E42313;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">► Administration</div>
+<div style="font-size:38px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.5px">Dashboard Admin</div>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:280px 1fr;min-height:500px">
+<!-- Sidebar Stats -->
+<div style="background:#1A1A1A;padding:32px 24px;display:flex;flex-direction:column;gap:20px">
+<div style="padding:20px;background:rgba(228,35,19,.1);border-radius:6px;border-left:4px solid #E42313">
+<div style="font-size:40px;font-weight:900;color:#E42313;line-height:1">{{ totalRooms }}</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:6px;letter-spacing:.5px">Salles totales</div>
+</div>
+<div style="padding:20px;background:rgba(28,43,75,.3);border-radius:6px;border-left:4px solid #fff">
+<div style="font-size:40px;font-weight:900;color:#fff;line-height:1">{{ activeReservations }}</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:6px;letter-spacing:.5px">Réservations actives</div>
+</div>
+<div style="padding:20px;background:rgba(228,35,19,.1);border-radius:6px;border-left:4px solid #E42313">
+<div style="font-size:40px;font-weight:900;color:#E42313;line-height:1">{{ pendingCount }}</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:6px;letter-spacing:.5px">En attente</div>
+</div>
+<div style="padding:20px;background:rgba(28,43,75,.3);border-radius:6px;border-left:4px solid #fff">
+<div style="font-size:40px;font-weight:900;color:#fff;line-height:1">{{ occupancyRate }}%</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:6px;letter-spacing:.5px">Taux d'occupation</div>
+</div>
+<div style="margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,.06)">
+<div style="font-size:10px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1px">Filtres rapides</div>
+<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+<div onClick="{{ setFilterAll }}" style="padding:8px 12px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .15s;background:{{ filterAllBgDark }};color:{{ filterAllColorDark }}">Toutes</div>
+<div onClick="{{ setFilterPending }}" style="padding:8px 12px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .15s;background:{{ filterPendingBgDark }};color:{{ filterPendingColorDark }}">En attente</div>
+<div onClick="{{ setFilterConfirmed }}" style="padding:8px 12px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .15s;background:{{ filterConfirmedBgDark }};color:{{ filterConfirmedColorDark }}">Confirmées</div>
+<div onClick="{{ setFilterRejected }}" style="padding:8px 12px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .15s;background:{{ filterRejectedBgDark }};color:{{ filterRejectedColorDark }}">Refusées</div>
+<div onClick="{{ setFilterCancelled }}" style="padding:8px 12px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .15s;background:{{ filterCancelledBgDark }};color:{{ filterCancelledColorDark }}">Annulées</div>
+</div>
+</div>
+</div>
+<!-- Main Table -->
+<div style="padding:32px 36px;background:#F5F5F5">
+<div style="font-size:20px;font-weight:800;text-transform:uppercase;margin-bottom:20px">Réservations</div>
+<div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;background:#fff">
+<div style="display:grid;grid-template-columns:1.3fr .8fr .55fr .7fr .6fr auto;gap:10px;padding:12px 16px;background:#1A1A1A;font-size:10px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.7);letter-spacing:.5px;align-items:center">
+<div>Salle</div>
+<div>Demandeur</div>
+<div>Date</div>
+<div>Horaire</div>
+<div>Statut</div>
+<div style="min-width:130px">Actions</div>
+</div>
+<sc-for list="{{ adminReservations }}" as="res" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:1.3fr .8fr .55fr .7fr .6fr auto;gap:10px;padding:14px 16px;border-bottom:1px solid #f0f0f0;align-items:center;font-size:13px;transition:background .1s" style-hover="background:#FAFAFA">
+<div style="font-weight:600">{{ res.roomName }}</div>
+<div style="color:#666;font-size:12px">{{ res.user }}</div>
+<div style="color:#888;font-size:12px">{{ res.date }}</div>
+<div style="color:#888;font-size:12px">{{ res.start }} – {{ res.end }}</div>
+<div><span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px;text-transform:uppercase;background:{{ res.statusBg }};color:{{ res.statusColor }}">{{ res.status }}</span></div>
+<div style="display:flex;gap:6px;min-width:130px">
+<sc-if value="{{ res.isPending }}">
+<div onClick="{{ res.onAccept }}" style="padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;background:#E8F5E9;color:#1B5E20;border-radius:3px;cursor:pointer;transition:all .15s" style-hover="background:#1B5E20;color:#fff">Accepter</div>
+<div onClick="{{ res.onReject }}" style="padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;background:#FFEBEE;color:#B71C1C;border-radius:3px;cursor:pointer;transition:all .15s" style-hover="background:#B71C1C;color:#fff">Refuser</div>
+</sc-if>
+<sc-if value="{{ res.isConfirmed }}">
+<div onClick="{{ res.onCancel }}" style="padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;background:#EEEEEE;color:#616161;border-radius:3px;cursor:pointer;transition:all .15s" style-hover="background:#616161;color:#fff">Annuler</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+
+<!-- FOOTER -->
+<div style="background:#1A1A1A;padding:48px 48px 24px;color:#fff">
+<div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px;margin-bottom:36px">
+<div>
+<div style="font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:16px">EKOD</div>
+<div style="font-size:12px;color:rgba(255,255,255,.4);line-height:2">185 Rue Henri Champion<br>Campus 2 – Bâtiment D<br>72100 Le Mans<br>02 43 21 00 24</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;color:#E42313">Navigation</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<span onClick="{{ goHome }}" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer" style-hover="color:#fff">Accueil</span>
+<span onClick="{{ goRooms }}" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer" style-hover="color:#fff">Nos salles</span>
+<span onClick="{{ goMyReservations }}" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer" style-hover="color:#fff">Mes réservations</span>
+<span onClick="{{ goAdmin }}" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer" style-hover="color:#fff">Administration</span>
+</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;color:#E42313">Certifications</div>
+<div style="font-size:12px;color:rgba(255,255,255,.4);line-height:2">La certification qualité a été délivrée au titre des catégories d'actions suivantes :<br>• Actions de formation<br>• Actions de formation par apprentissage</div>
+</div>
+</div>
+<div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center">
+<div style="font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.5px">© 2026 EKOD – CCI LE MANS SARTHE</div>
+<div style="display:flex;gap:20px">
+<span style="font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.5px">CGV</span>
+<span style="font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.5px">MENTIONS LÉGALES</span>
+<span style="font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.5px">CHARTE RGPD</span>
+</div>
+</div>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: &quot;100%&quot;, &quot;height&quot;: &quot;100%&quot; },
+  &quot;initialPage&quot;: {
+    &quot;editor&quot;: &quot;enum&quot;,
+    &quot;options&quot;: [&quot;home&quot;, &quot;rooms&quot;, &quot;roomDetail&quot;, &quot;myReservations&quot;, &quot;booking&quot;, &quot;admin&quot;],
+    &quot;default&quot;: &quot;home&quot;,
+    &quot;tsType&quot;: &quot;string&quot;
+  }
+}">
+
+class Component extends DCLogic {
+  state = {
+    page: 'home',
+    selectedRoomId: null,
+    bookingRoomId: null,
+    bookingDate: '2026-06-25',
+    bookingStartTime: '09:00',
+    bookingEndTime: '11:00',
+    bookingPeople: 5,
+    bookingPurpose: '',
+    showBookingSuccess: false,
+    adminFilter: 'all',
+    reservations: [
+      { id: 1, roomId: 1, roomName: 'Salle Ada Lovelace', date: '24/06/2026', start: '09:00', end: '11:00', purpose: 'Cours développement web', status: 'CONFIRMED', user: 'Marie Dupont' },
+      { id: 2, roomId: 2, roomName: 'Salle Alan Turing', date: '25/06/2026', start: '14:00', end: '16:00', purpose: 'Réunion projet alternance', status: 'PENDING', user: 'Lucas Martin' },
+      { id: 3, roomId: 3, roomName: 'Salle Grace Hopper', date: '23/06/2026', start: '10:00', end: '12:00', purpose: 'Atelier UX Design', status: 'CANCELLED', user: 'Sophie Bernard' },
+      { id: 4, roomId: 4, roomName: 'Salle Tim Berners-Lee', date: '26/06/2026', start: '09:00', end: '12:00', purpose: 'Conférence cybersécurité', status: 'CONFIRMED', user: 'Thomas Petit' },
+      { id: 5, roomId: 5, roomName: 'Salle Linus Torvalds', date: '24/06/2026', start: '13:00', end: '14:00', purpose: 'Point équipe réseau', status: 'REJECTED', user: 'Emma Leroy' },
+      { id: 6, roomId: 6, roomName: 'Salle Margaret Hamilton', date: '27/06/2026', start: '15:00', end: '17:00', purpose: 'Workshop IA', status: 'PENDING', user: 'Antoine Moreau' }
+    ]
+  };
+
+  rooms = [
+    { id: 1, name: 'Salle Ada Lovelace', capacity: 20, floor: '1er étage', equipment: ['Vidéoprojecteur', 'Wi-Fi', 'Tableau blanc'], available: true, description: 'Salle polyvalente idéale pour les cours et formations en groupe. Lumineuse et bien équipée.' },
+    { id: 2, name: 'Salle Alan Turing', capacity: 35, floor: '2ème étage', equipment: ['Écran interactif', 'Visioconférence', 'Wi-Fi'], available: true, description: 'Grande salle de conférence avec équipement de visioconférence pour les réunions hybrides.' },
+    { id: 3, name: 'Salle Grace Hopper', capacity: 12, floor: '1er étage', equipment: ['TV', 'Wi-Fi', 'Tableau blanc'], available: false, description: 'Salle de réunion intimiste parfaite pour les petits groupes et sessions de brainstorming.' },
+    { id: 4, name: 'Salle Tim Berners-Lee', capacity: 50, floor: 'RDC', equipment: ['Vidéoprojecteur', 'Sonorisation', 'Wi-Fi', 'Micro'], available: true, description: 'Amphithéâtre pour les grandes conférences, présentations et événements.' },
+    { id: 5, name: 'Salle Linus Torvalds', capacity: 8, floor: '2ème étage', equipment: ['Wi-Fi', 'Tableau blanc'], available: true, description: 'Petit espace collaboratif pour les réunions rapides et le travail en petit comité.' },
+    { id: 6, name: 'Salle Margaret Hamilton', capacity: 25, floor: '1er étage', equipment: ['Écran interactif', 'Wi-Fi', 'Imprimante 3D'], available: true, description: 'Salle high-tech équipée pour les ateliers techniques et le prototypage.' }
+  ];
+
+  getStatusStyle(status) {
+    var map = {
+      CONFIRMED: { color: '#1B5E20', bg: '#E8F5E9' },
+      PENDING: { color: '#E65100', bg: '#FFF3E0' },
+      CANCELLED: { color: '#616161', bg: '#EEEEEE' },
+      REJECTED: { color: '#B71C1C', bg: '#FFEBEE' }
+    };
+    return map[status] || { color: '#1A1A1A', bg: '#F5F5F5' };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState && prevState.page !== this.state.page) {
+      try { window.scrollTo(0, 0); } catch(e) {}
+    }
+  }
+
+  componentDidMount() {
+    var page = this.props.initialPage || 'home';
+    if (page !== 'home') {
+      this.setState({ page: page, selectedRoomId: 1, bookingRoomId: 1 });
+    }
+  }
+
+  renderVals() {
+    var state = this.state;
+    var self = this;
+    var page = state.page;
+    var selectedRoom = this.rooms.find(function(r) { return r.id === state.selectedRoomId; }) || this.rooms[0];
+    var bookingRoom = this.rooms.find(function(r) { return r.id === (state.bookingRoomId || state.selectedRoomId); }) || this.rooms[0];
+
+    var roomsWithHandlers = this.rooms.map(function(r) {
+      return Object.assign({}, r, {
+        equipmentStr: r.equipment.join(' · '),
+        statusText: r.available ? 'DISPONIBLE' : 'OCCUPÉE',
+        statusColor: r.available ? '#1B5E20' : '#B71C1C',
+        statusBg: r.available ? '#E8F5E9' : '#FFEBEE',
+        onDetail: function() { self.setState({ page: 'roomDetail', selectedRoomId: r.id }); },
+        onBook: function() { self.setState({ page: 'booking', bookingRoomId: r.id, showBookingSuccess: false }); }
+      });
+    });
+
+    var availableRooms = roomsWithHandlers.filter(function(r) { return r.available; });
+
+    var resWithHandlers = state.reservations.map(function(r) {
+      var st = self.getStatusStyle(r.status);
+      return Object.assign({}, r, {
+        statusColor: st.color,
+        statusBg: st.bg,
+        onAccept: function() { self.setState(function(s) { return { reservations: s.reservations.map(function(res) { return res.id === r.id ? Object.assign({}, res, { status: 'CONFIRMED' }) : res; }) }; }); },
+        onReject: function() { self.setState(function(s) { return { reservations: s.reservations.map(function(res) { return res.id === r.id ? Object.assign({}, res, { status: 'REJECTED' }) : res; }) }; }); },
+        onCancel: function() { self.setState(function(s) { return { reservations: s.reservations.map(function(res) { return res.id === r.id ? Object.assign({}, res, { status: 'CANCELLED' }) : res; }) }; }); },
+        isPending: r.status === 'PENDING',
+        isConfirmed: r.status === 'CONFIRMED'
+      });
+    });
+
+    var adminFilter = state.adminFilter;
+    var adminReservations = adminFilter === 'all' ? resWithHandlers : resWithHandlers.filter(function(r) { return r.status === adminFilter; });
+    var pendingCount = state.reservations.filter(function(r) { return r.status === 'PENDING'; }).length;
+    var confirmedCount = state.reservations.filter(function(r) { return r.status === 'CONFIRMED'; }).length;
+
+    return {
+      page: page,
+      isHome: page === 'home',
+      isRooms: page === 'rooms',
+      isRoomDetail: page === 'roomDetail',
+      isMyReservations: page === 'myReservations',
+      isBooking: page === 'booking',
+      isAdmin: page === 'admin',
+
+      rooms: roomsWithHandlers,
+      availableRooms: availableRooms,
+      selectedRoom: selectedRoom,
+      selectedRoomEquipment: selectedRoom ? selectedRoom.equipment.map(function(n) { return { name: n }; }) : [],
+      bookingRoom: bookingRoom,
+      myReservations: resWithHandlers,
+      adminReservations: adminReservations,
+
+      totalRooms: this.rooms.length,
+      activeReservations: confirmedCount + pendingCount,
+      confirmedCount: confirmedCount,
+      pendingCount: pendingCount,
+      occupancyRate: 73,
+
+      showBookingSuccess: state.showBookingSuccess,
+      bookingDate: state.bookingDate,
+      bookingStartTime: state.bookingStartTime,
+      bookingEndTime: state.bookingEndTime,
+      bookingPeople: state.bookingPeople,
+      bookingPurpose: state.bookingPurpose,
+      bookingRoomName: bookingRoom ? bookingRoom.name : 'Salle',
+      bookingRoomCapacity: bookingRoom ? bookingRoom.capacity : 0,
+
+      goHome: function() { self.setState({ page: 'home' }); },
+      goRooms: function() { self.setState({ page: 'rooms' }); },
+      goMyReservations: function() { self.setState({ page: 'myReservations' }); },
+      goAdmin: function() { self.setState({ page: 'admin' }); },
+      goBookingDefault: function() { self.setState({ page: 'booking', bookingRoomId: self.rooms[0].id, showBookingSuccess: false }); },
+      bookSelectedRoom: function() { self.setState({ page: 'booking', bookingRoomId: state.selectedRoomId, showBookingSuccess: false }); },
+
+      onDateChange: function(e) { self.setState({ bookingDate: e.target.value }); },
+      onStartTimeChange: function(e) { self.setState({ bookingStartTime: e.target.value }); },
+      onEndTimeChange: function(e) { self.setState({ bookingEndTime: e.target.value }); },
+      onPeopleChange: function(e) { self.setState({ bookingPeople: parseInt(e.target.value) || 1 }); },
+      onPurposeChange: function(e) { self.setState({ bookingPurpose: e.target.value }); },
+
+      submitBooking: function() {
+        var room = self.rooms.find(function(r) { return r.id === (state.bookingRoomId || state.selectedRoomId); }) || self.rooms[0];
+        var newRes = {
+          id: Date.now(),
+          roomId: room.id,
+          roomName: room.name,
+          date: state.bookingDate.split('-').reverse().join('/'),
+          start: state.bookingStartTime,
+          end: state.bookingEndTime,
+          purpose: state.bookingPurpose || 'Réservation',
+          status: 'PENDING',
+          user: 'Marie Dupont'
+        };
+        self.setState(function(s) { return { reservations: s.reservations.concat([newRes]), showBookingSuccess: true }; });
+      },
+
+      setFilterAll: function() { self.setState({ adminFilter: 'all' }); },
+      setFilterPending: function() { self.setState({ adminFilter: 'PENDING' }); },
+      setFilterConfirmed: function() { self.setState({ adminFilter: 'CONFIRMED' }); },
+      setFilterRejected: function() { self.setState({ adminFilter: 'REJECTED' }); },
+      setFilterCancelled: function() { self.setState({ adminFilter: 'CANCELLED' }); },
+
+      filterAllBg: adminFilter === 'all' ? '#1A1A1A' : '#F5F5F5',
+      filterAllColor: adminFilter === 'all' ? '#fff' : '#666',
+      filterPendingBg: adminFilter === 'PENDING' ? '#E65100' : '#F5F5F5',
+      filterPendingColor: adminFilter === 'PENDING' ? '#fff' : '#666',
+      filterConfirmedBg: adminFilter === 'CONFIRMED' ? '#1B5E20' : '#F5F5F5',
+      filterConfirmedColor: adminFilter === 'CONFIRMED' ? '#fff' : '#666',
+      filterRejectedBg: adminFilter === 'REJECTED' ? '#B71C1C' : '#F5F5F5',
+      filterRejectedColor: adminFilter === 'REJECTED' ? '#fff' : '#666',
+      filterCancelledBg: adminFilter === 'CANCELLED' ? '#616161' : '#F5F5F5',
+      filterCancelledColor: adminFilter === 'CANCELLED' ? '#fff' : '#666',
+
+      // Dark sidebar filter styles for Variant C admin
+      filterAllBgDark: adminFilter === 'all' ? '#E42313' : 'rgba(255,255,255,.06)',
+      filterAllColorDark: adminFilter === 'all' ? '#fff' : 'rgba(255,255,255,.4)',
+      filterPendingBgDark: adminFilter === 'PENDING' ? '#E65100' : 'rgba(255,255,255,.06)',
+      filterPendingColorDark: adminFilter === 'PENDING' ? '#fff' : 'rgba(255,255,255,.4)',
+      filterConfirmedBgDark: adminFilter === 'CONFIRMED' ? '#1B5E20' : 'rgba(255,255,255,.06)',
+      filterConfirmedColorDark: adminFilter === 'CONFIRMED' ? '#fff' : 'rgba(255,255,255,.4)',
+      filterRejectedBgDark: adminFilter === 'REJECTED' ? '#B71C1C' : 'rgba(255,255,255,.06)',
+      filterRejectedColorDark: adminFilter === 'REJECTED' ? '#fff' : 'rgba(255,255,255,.4)',
+      filterCancelledBgDark: adminFilter === 'CANCELLED' ? '#616161' : 'rgba(255,255,255,.06)',
+      filterCancelledColorDark: adminFilter === 'CANCELLED' ? '#fff' : 'rgba(255,255,255,.4)'
+    };
+  }
+}
+
+</script>
+</body>
+</html>
