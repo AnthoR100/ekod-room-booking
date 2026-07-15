@@ -37,6 +37,8 @@ services:
       SCW_BUCKET: ${SCW_BUCKET}
       SCW_ACCESS_KEY: ${SCW_ACCESS_KEY}
       SCW_SECRET_KEY: ${SCW_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
 
 volumes:
   postgres_data_ekod_room_booking:

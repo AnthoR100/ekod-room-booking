@@ -57,13 +57,12 @@
       <!-- Connecté : bulle utilisateur -->
       <div th:if="${isAuthenticated}" class="user-bubble-wrap" style="position:relative">
         <button class="user-bubble" onclick="toggleUserMenu(event)"
-                th:title="${authenticatedUser.firstName + ' ' + authenticatedUser.lastName}">
-          <span th:text="${#strings.toUpperCase(#strings.substring(authenticatedUser.firstName,0,1))
-                          + #strings.toUpperCase(#strings.substring(authenticatedUser.lastName,0,1))}">ZS</span>
+                th:title="${(#strings.isEmpty(authenticatedUser.firstName) and #strings.isEmpty(authenticatedUser.lastName)) ? authenticatedUser.email : (authenticatedUser.firstName + ' ' + authenticatedUser.lastName)}">
+          <span th:text="${(not #strings.isEmpty(authenticatedUser.firstName) ? #strings.toUpperCase(#strings.substring(authenticatedUser.firstName,0,1)) : '') + (not #strings.isEmpty(authenticatedUser.lastName) ? #strings.toUpperCase(#strings.substring(authenticatedUser.lastName,0,1)) : (#strings.isEmpty(authenticatedUser.firstName) ? #strings.toUpperCase(#strings.substring(authenticatedUser.email,0,1)) : ''))}">ZS</span>
         </button>
         <div id="userMenu" class="user-menu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:180px;z-index:200;overflow:hidden">
           <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:.8rem;color:#6b7280"
-               th:text="${authenticatedUser.firstName + ' ' + authenticatedUser.lastName}">Zak Salmi</div>
+               th:text="${(#strings.isEmpty(authenticatedUser.firstName) and #strings.isEmpty(authenticatedUser.lastName)) ? authenticatedUser.email : (authenticatedUser.firstName + ' ' + authenticatedUser.lastName)}">Zak Salmi</div>
           <a th:href="@{/profile}" style="display:block;padding:10px 16px;color:#111;text-decoration:none;font-size:.875rem" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">Mon profil</a>
           <button onclick="logout()" style="display:block;width:100%;text-align:left;padding:10px 16px;border:none;background:none;color:#ef4444;font-size:.875rem;cursor:pointer" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">Se déconnecter</button>
         </div>
@@ -105,7 +104,8 @@
       }
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      // POST to Spring's /logout to invalidate the server-side session and delete cookies
+      await fetch('/logout', { method: 'POST', redirect: 'manual' }).catch(() => {});
       window.location.href = '/login';
     }
   </script>

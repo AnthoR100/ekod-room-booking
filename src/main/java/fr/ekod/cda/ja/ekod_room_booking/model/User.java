@@ -33,7 +33,8 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
+    @lombok.Getter(lombok.AccessLevel.NONE)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -53,6 +54,11 @@ public class User implements UserDetails {
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String getPassword() {
+        return password != null ? password : "";
     }
 
     @Override
