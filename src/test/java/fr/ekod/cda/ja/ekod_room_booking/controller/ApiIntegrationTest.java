@@ -20,12 +20,6 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Tests d'intégration API — vérifie les codes HTTP et les règles de sécurité
- * avec le vrai SecurityConfig, le vrai filtre JWT et la base H2 en mémoire.
- * Pas de rollback automatique : les données de test sont préfixées "TEST"
- * et nettoyées dans @AfterEach / @AfterAll.
- */
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -108,16 +102,12 @@ class ApiIntegrationTest {
         return objectMapper.readTree(body).get("accessToken").asText();
     }
 
-    // ── GET /api/rooms — accès public ─────────────────────────────────────────
-
     @Test
     @Order(1)
     void getRooms_returns200_whenAnonymous() throws Exception {
         mockMvc.perform(get("/api/rooms"))
                 .andExpect(status().isOk());
     }
-
-    // ── POST /api/rooms — matrice ADMIN / USER / anonyme ─────────────────────
 
     @Test
     @Order(2)
@@ -159,7 +149,6 @@ class ApiIntegrationTest {
     @Test
     @Order(5)
     void createRoom_returns400_whenBodyIsInvalid() throws Exception {
-        // name vide + capacity absent → violations de contraintes
         mockMvc.perform(post("/api/rooms")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,8 +157,6 @@ class ApiIntegrationTest {
                                 """))
                 .andExpect(status().isBadRequest());
     }
-
-    // ── GET /api/reservations/me ──────────────────────────────────────────────
 
     @Test
     @Order(6)
@@ -185,8 +172,6 @@ class ApiIntegrationTest {
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isOk());
     }
-
-    // ── GET /api/reservations — admin only ────────────────────────────────────
 
     @Test
     @Order(8)
@@ -204,12 +189,9 @@ class ApiIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    // ── POST /api/reservations — 201 ─────────────────────────────────────────
-
     @Test
     @Order(10)
     void createReservation_returns201_whenUser() throws Exception {
-        // Crée une salle de test avec le compte admin
         String roomBody = mockMvc.perform(post("/api/rooms")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -239,8 +221,6 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.numberOfPeople").value(5));
     }
-
-    // ── POST /api/auth/register — validation des entrées ─────────────────────
 
     @Test
     @Order(11)

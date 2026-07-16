@@ -31,13 +31,11 @@ public class StorageService {
         this.bucket = bucket;
     }
 
-    // List object keys in the bucket
     public List<String> list() {
         return s3.listObjectsV2(b -> b.bucket(bucket)).contents()
                 .stream().map(S3Object::key).toList();
     }
 
-    // Upload a file using the One Zone storage class (cheapest non-Glacier)
     public void upload(String key, Path file) {
         s3.putObject(b -> b.bucket(bucket)
                         .key(key)

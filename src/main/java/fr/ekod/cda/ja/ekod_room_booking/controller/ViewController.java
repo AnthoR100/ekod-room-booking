@@ -36,8 +36,6 @@ public class ViewController {
     private final EquipmentService equipmentService;
     private final RoomFileService roomFileService;
 
-    // ── Routes publiques ──────────────────────────────────────────────────────
-
     @GetMapping("/")
     public String index(Model model) {
         var allRooms = roomService.findAll();
@@ -97,8 +95,6 @@ public class ViewController {
         model.addAttribute("activePage", "");
         return "error/access-denied";
     }
-
-    // ── Admin — Salles ────────────────────────────────────────────────────────
 
     @GetMapping("/admin/rooms")
     @PreAuthorize("hasRole('ADMIN')")
@@ -198,8 +194,6 @@ public class ViewController {
         return "redirect:/admin/rooms";
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     private boolean isLoggedIn(Authentication authentication) {
         return authentication != null
                 && authentication.isAuthenticated()
@@ -212,8 +206,6 @@ public class ViewController {
         model.addAttribute("user", user);
         return "user/profile";
     }
-
-    // ── Routes protégées ─────────────────────────────────────────────────────
 
     @GetMapping("/reservations/me")
     public String myReservations(@AuthenticationPrincipal User user, Model model) {
@@ -228,8 +220,6 @@ public class ViewController {
         reservationService.cancel(id, user);
         return "redirect:/reservations/me";
     }
-
-    // ── Admin — Réservations ─────────────────────────────────────────────────
 
     @GetMapping("/admin/dashboard")
     @PreAuthorize("hasRole('ADMIN')")

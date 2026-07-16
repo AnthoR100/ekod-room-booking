@@ -28,8 +28,6 @@ public class ReservationService {
     private final ReservationMapper reservationMapper;
     private final RoomRepository roomRepository;
 
-
-    //create
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto dto, User user) {
 
@@ -57,15 +55,12 @@ public class ReservationService {
 
     }
 
-
-    //findAll
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findAll() {
         return reservationRepository.findAll()
                 .stream().map(reservationMapper::toResponseDto).toList();
     }
 
-    //findByCurrentUser
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findByUserId(User user) {
         return reservationRepository.findByUserId(user.getId())
@@ -73,7 +68,6 @@ public class ReservationService {
                 .map(reservationMapper::toResponseDto)
                 .toList();
     }
-
 
     @Transactional(readOnly = true)
     public long countByStatus(ReservationStatus status) {
@@ -86,14 +80,12 @@ public class ReservationService {
                 .stream().map(reservationMapper::toResponseDto).toList();
     }
 
-    //findPending
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findPending() {
         return reservationRepository.findByStatus(ReservationStatus.PENDING)
                 .stream().map(reservationMapper::toResponseDto).toList();
     }
 
-    //findByRoomId
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findByRoomId(Long roomId) {
         return reservationRepository.findByRoomId(roomId)
@@ -110,7 +102,6 @@ public class ReservationService {
                 .toList();
     }
 
-    //findByUserId (admin)
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findByUserId(Long userId) {
         return reservationRepository.findByUserId(userId)
@@ -119,7 +110,6 @@ public class ReservationService {
                 .toList();
     }
 
-    //updateStatus
     @Transactional
     public ReservationResponseDto updateStatus(Long id, ReservationStatus status) {
         Reservation reservation = reservationRepository.findById(id)
@@ -130,7 +120,6 @@ public class ReservationService {
         return reservationMapper.toResponseDto(reservationRepository.save(reservation));
     }
 
-    //cancel
     @Transactional
     public ReservationResponseDto cancel(Long id, User user) {
         Reservation reservation = reservationRepository.findById(id)
@@ -157,7 +146,6 @@ public class ReservationService {
         return reservationMapper.toResponseDto(reservationRepository.save(reservation));
     }
 
-    //confirm (admin)
     @Transactional
     public ReservationResponseDto confirm(Long id) {
         Reservation reservation = reservationRepository.findById(id)
@@ -183,7 +171,6 @@ public class ReservationService {
         return reservationMapper.toResponseDto(reservationRepository.save(reservation));
     }
 
-    //reject (admin)
     @Transactional
     public ReservationResponseDto reject(Long id) {
         Reservation reservation = reservationRepository.findById(id)
@@ -198,7 +185,6 @@ public class ReservationService {
         return reservationMapper.toResponseDto(reservationRepository.save(reservation));
     }
 
-    //delete
     @Transactional
     public void delete(Long id, User user) {
         Reservation reservation = reservationRepository.findById(id)
