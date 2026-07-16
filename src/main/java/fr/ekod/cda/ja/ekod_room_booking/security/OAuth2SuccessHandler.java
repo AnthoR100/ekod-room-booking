@@ -53,8 +53,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setMaxAge(jwtExpiration / 1000);
         response.addCookie(cookie);
 
-        // Clear the OAuth2 session so the next request authenticates via the JWT cookie,
-        // which sets a User principal instead of OAuth2User.
         request.getSession().invalidate();
 
         getRedirectStrategy().sendRedirect(request, response, "/oauth2/success");

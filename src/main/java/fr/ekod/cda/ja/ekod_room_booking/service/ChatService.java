@@ -62,25 +62,21 @@ public class ChatService {
 
     @Transactional
     public ChatResponseDto chat(ChatRequestDto dto, User user) {
-        // 7.1 — Récupérer ou créer la conversation
         Conversation conversation = conversationRepository.findByUserId(user.getId())
                 .orElseGet(() -> conversationRepository.save(
                         Conversation.builder().user(user).build()
                 ));
 
-        // 7.2 — Sauvegarder le message utilisateur
         chatMessageRepository.save(ChatMessage.builder()
                 .conversation(conversation)
                 .chatRole(ChatRole.USER)
                 .content(dto.getContent())
                 .build());
 
-        // 7.3 — Charger les 10 derniers messages en ordre chronologique
         List<ChatMessage> history = chatMessageRepository
                 .findTop10ByConversationIdOrderByCreatedAtDesc(conversation.getId());
         Collections.reverse(history);
 
-        // 7.4-7.7 — Appel OpenAI avec gestion des tool calls
         String response = callOpenAI(history, user);
 
         ChatMessage assistantMessage = chatMessageRepository.save(ChatMessage.builder()
@@ -179,14 +175,12 @@ public class ChatService {
             List<ChatCompletionMessageToolCall> toolCalls,
             User user
     ) {
-        // Ajouter le message assistant (avec ses tool calls) à l'historique
         ChatCompletionAssistantMessageParam.Builder assistantParamBuilder =
                 ChatCompletionAssistantMessageParam.builder()
                         .toolCalls(toolCalls);
         assistantMessage.content().ifPresent(assistantParamBuilder::content);
         messages.add(ChatCompletionMessageParam.ofAssistant(assistantParamBuilder.build()));
 
-        // Exécuter chaque outil et ajouter les résultats
         for (ChatCompletionMessageToolCall toolCall : toolCalls) {
             String result = executeToolCall(
                     toolCall.function().name(),

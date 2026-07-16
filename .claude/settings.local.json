@@ -7,7 +7,11 @@
       "Bash(openssl rand *)",
       "Bash(./mvnw.cmd compile *)",
       "Bash(reg query *)",
-      "Bash(xargs cat *)"
+      "Bash(xargs cat *)",
+      "Bash(git stash *)",
+      "Bash(./mvnw.cmd -q compile -DskipTests)",
+      "Bash(cd \"C:\\\\Users\\\\zaki7\\\\Documents\\\\Projets\\\\java\\\\ekod-room-booking\")",
+      "Bash(export JAVA_HOME=\"/c/Program Files/Java/jdk-24\")"
     ]
   }
 }

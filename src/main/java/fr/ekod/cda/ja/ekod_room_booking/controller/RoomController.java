@@ -34,8 +34,6 @@ public class RoomController {
         this.roomFileService = roomFileService;
     }
 
-    // ── CRUD Salles ───────────────────────────────────────────────────────────
-
     @GetMapping
     public ResponseEntity<List<RoomResponseDto>> findAll() {
         return ResponseEntity.ok(roomService.findAll());
@@ -74,8 +72,6 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
-    // ── Fichiers génériques ───────────────────────────────────────────────────
-
     @GetMapping("/files")
     public ResponseEntity<List<String>> listFiles() {
         return ResponseEntity.ok(storageService.list());
@@ -93,8 +89,6 @@ public class RoomController {
                 .body(response.readAllBytes());
     }
 
-    // ── Image de salle ────────────────────────────────────────────────────────
-
     @PostMapping("/upload-image")
     public ResponseEntity<Map<String, String>> uploadStandaloneImage(
             @RequestParam("file") MultipartFile file) throws IOException {
@@ -109,8 +103,6 @@ public class RoomController {
         String imageUrl = roomFileService.uploadImage(id, file);
         return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
     }
-
-    // ── Documents liés à une salle ────────────────────────────────────────────
 
     @GetMapping("/{id}/files")
     public ResponseEntity<List<RoomFileResponseDto>> listRoomFiles(@PathVariable Long id) {
