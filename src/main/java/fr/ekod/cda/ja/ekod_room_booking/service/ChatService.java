@@ -16,8 +16,10 @@ import com.openai.models.chat.completions.ChatCompletionToolMessageParam;
 import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
+import fr.ekod.cda.ja.ekod_room_booking.dto.chatbot.ChatMessageResponseDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.chatbot.ChatRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.chatbot.ChatResponseDto;
+import fr.ekod.cda.ja.ekod_room_booking.dto.chatbot.ConversationResponseDto;
 import fr.ekod.cda.ja.ekod_room_booking.dto.reservation.ReservationRequestDto;
 import fr.ekod.cda.ja.ekod_room_booking.exception.ChatException;
 import fr.ekod.cda.ja.ekod_room_booking.model.ChatMessage;
@@ -88,6 +90,25 @@ public class ChatService {
                 .build());
 
         return new ChatResponseDto(conversation.getId(), response, assistantMessage.getCreatedAt());
+    }
+
+    @Transactional(readOnly = true)
+    public ConversationResponseDto getHistory(User user) {
+        return conversationRepository.findByUserId(user.getId())
+                .map(conversation -> {
+                    List<ChatMessageResponseDto> messages = chatMessageRepository
+                            .findByConversationIdOrderByCreatedAtAsc(conversation.getId())
+                            .stream()
+                            .map(m -> new ChatMessageResponseDto(
+                                    m.getId(),
+                                    m.getChatRole().name(),
+                                    m.getContent(),
+                                    m.getCreatedAt()
+                            ))
+                            .toList();
+                    return new ConversationResponseDto(conversation.getId(), conversation.getCreatedAt(), messages);
+                })
+                .orElseGet(() -> new ConversationResponseDto(null, null, List.of()));
     }
 
     private static final int MAX_TOOL_ITERATIONS = 5;
